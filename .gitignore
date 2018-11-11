@@ -1,2 +1,7 @@
-/bin
 /bukkit
+
+# Eclipse Core
+/bin
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath

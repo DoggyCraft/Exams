@@ -53,7 +53,7 @@ public class Commands
 			return true;
 		}
 
-		if (cmd.getName().equalsIgnoreCase("exams"))
+		if ((cmd.getName().equalsIgnoreCase("exams")) || (cmd.getName().equalsIgnoreCase("exam")))
 		{
 			if (args.length == 0)
 			{
@@ -198,7 +198,7 @@ public class Commands
 		sender.sendMessage(ChatColor.AQUA + "/exams b" + ChatColor.WHITE + " - Answer A to an exam question");
 		sender.sendMessage(ChatColor.AQUA + "/exams c" + ChatColor.WHITE + " - Answer A to an exam question");
 		sender.sendMessage(ChatColor.AQUA + "/exams d" + ChatColor.WHITE + " - Answer A to an exam question");
-		sender.sendMessage(ChatColor.AQUA + "/exams reload" + ChatColor.WHITE + " - Reload gods system");
+		sender.sendMessage(ChatColor.AQUA + "/exams reload" + ChatColor.WHITE + " - Reload Exams system");
 
 		return true;
 	}
