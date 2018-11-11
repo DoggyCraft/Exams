@@ -69,9 +69,9 @@ public class ExamManager
 		{
 			examsConfigFile = new File(plugin.getDataFolder(), "exams.yml");
 		}
-		
+
 		examsConfig = YamlConfiguration.loadConfiguration(examsConfigFile);
-		
+
 		try
 		{
 			examsConfig.load(new InputStreamReader(new FileInputStream(examsConfigFile), Charset.forName("UTF-8")));
@@ -91,7 +91,7 @@ public class ExamManager
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 		if(!examsConfigFile.exists())
 		{
 			String testExam = "Citizen";
@@ -112,6 +112,10 @@ public class ExamManager
 			this.examsConfig.set(testExam + ".NumberOfQuestions", 3);
 			this.examsConfig.set(testExam + ".Questions", questions);
 
+			int n = 0;
+			
+			int key = 1;
+			
 			for (String question : questions)
 			{
 				List options = new ArrayList();
@@ -120,11 +124,12 @@ public class ExamManager
 				options.add("Maybe");
 				options.add("I dont know");
 
-				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
-				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "B");
+				this.examsConfig.set(testExam + ".Questions." + key + ".Question", question);
+				this.examsConfig.set(testExam + ".Questions." + key + ".Options", options);
+				this.examsConfig.set(testExam + ".Questions." + key + ".CorrectOption", "B");
+				key++;
 			}
-			
-			
+					
 			testExam = "Wizard";
 
 			questions = new ArrayList<String>();
@@ -143,6 +148,8 @@ public class ExamManager
 			this.examsConfig.set(testExam + ".NumberOfQuestions", 3);
 			this.examsConfig.set(testExam + ".Questions", questions);
 
+			key = 1;
+
 			for (String question : questions)
 			{
 				List options = new ArrayList();
@@ -151,8 +158,10 @@ public class ExamManager
 				options.add("No idea");
 				options.add("Blue monday");
 
-				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
-				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "A");
+				this.examsConfig.set(testExam + ".Questions." + key + ".Question", question);
+				this.examsConfig.set(testExam + ".Questions." + key + ".Options", options);
+				this.examsConfig.set(testExam + ".Questions." + key + ".CorrectOption", "A");
+				key++;
 			}			
 			
 			save();			
@@ -356,6 +365,14 @@ public class ExamManager
 			plugin.log(playerName + " failed the " + examName + " exam with " + score + " points");
 
 			plugin.getPermissionsManager().setGroup(playerName, oldGroup);
+
+			String command = getExamFailCommand(examName);
+			
+			if(command!=null)
+			{
+				plugin.logDebug("Reading single fail command");
+				plugin.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replace("$PlayerName", playerName));
+			}
 		}
 	}
 
@@ -412,6 +429,11 @@ public class ExamManager
 		return examsConfig.getString(examName + ".Command");
 	}
 
+	public String getExamFailCommand(String examName)
+	{
+		return examsConfig.getString(examName + ".CommandOnFail");
+	}
+
 	public List<String> getExamCommands(String examName)
 	{
 		return examsConfig.getStringList(examName + ".Commands");
@@ -421,9 +443,12 @@ public class ExamManager
 	{
 		String examName = plugin.getStudentManager().getExamForStudent(playerName);
 
-		if (plugin.getStudentManager().nextExamQuestion(playerName) >= getExamNumberOfQuestions(examName))
+		//plugin.log("getExamNumberOfQuestions is " + getExamNumberOfQuestions(examName));
+		//plugin.log("plugin.getStudentManager().nextExamQuestion(playerName) is " + plugin.getStudentManager().nextExamQuestionIndex(playerName));
+		
+		if (plugin.getStudentManager().nextExamQuestionIndex(playerName) >= getExamNumberOfQuestions(examName))
 		{
-			plugin.logDebug("getExamNumberOfQuestions: No more questions");
+			plugin.log("getExamNumberOfQuestions: No more questions");
 			return false;
 		}
 
@@ -433,7 +458,7 @@ public class ExamManager
 
 		if (question == null)
 		{
-			plugin.logDebug("nextExamQuestion: No question found for exam " + examName);
+			plugin.log("nextExamQuestion: No question found for exam " + examName);
 			return false;
 		}
 
@@ -442,9 +467,12 @@ public class ExamManager
 
 		if (options==null || options.size() == 0)
 		{
-			plugin.logDebug("nextExamQuestion: No options found for question '" + question + "'");
+			plugin.log("nextExamQuestion: No options found for question '" + question + "'");
 			return false;
 		}
+		
+		plugin.log("nextExamQuestion: Question is '" + question + "'");
+		plugin.log("nextExamQuestion: ExamQuestionIndex is " + examQuestionIndex);
 
 		plugin.getStudentManager().setExamQuestionForStudent(playerName, question, options, correctOption);
 
@@ -484,7 +512,7 @@ public class ExamManager
 	public List<String> getExamQuestionOptionText(String examName, int examQuestionIndex)
 	{
 		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
-		Set questions = configSection.getKeys(false);
+		Set<String> questions = configSection.getKeys(false);
 
 		if(examQuestionIndex >= questions.size())
 		{
@@ -500,32 +528,32 @@ public class ExamManager
 	public boolean generateExam(String playerName, String examName)
 	{
 		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
-		Set<String> questions = configSection.getKeys(false);
+		Set<String> questionKeys = configSection.getKeys(false);
 
-		if (questions.size() == 0)
+		if (questionKeys.size() == 0)
 		{
 			plugin.log("No questions for exam called '" + examName + "'");
 			return false;
 		}
 
-		if (questions.size() < getExamNumberOfQuestions(examName))
+		if (questionKeys.size() < getExamNumberOfQuestions(examName))
 		{
 			plugin.log("Not enough questions for exam '" + examName + "'");
 			return false;
 		}
 
-		this.plugin.logDebug("Got " + questions.size() + " questions");
+		this.plugin.logDebug("Got " + questionKeys.size() + " questions");
 
 		List<String> selectedQuestions = new ArrayList<String>();
 
 		for (int q = 0; q < getExamNumberOfQuestions(examName); q++)
 		{
-			selectedQuestions.add(String.valueOf(this.random.nextInt(questions.size())));
+			selectedQuestions.add(String.valueOf(this.random.nextInt(questionKeys.size())));
 		}
 
 		while (!isDifferentStrings(selectedQuestions))
 		{
-			selectedQuestions.set(random.nextInt(selectedQuestions.size()), String.valueOf(random.nextInt(questions.size())));
+			selectedQuestions.set(random.nextInt(selectedQuestions.size()), String.valueOf(random.nextInt(questionKeys.size())));
 		}
 
 		plugin.getStudentManager().setExamForStudent(playerName, examName, selectedQuestions);
@@ -573,7 +601,6 @@ public class ExamManager
 				case 1 : plugin.sendMessage(playerName, ChatColor.YELLOW + "B - " + ChatColor.AQUA + option); break;
 				case 2 : plugin.sendMessage(playerName, ChatColor.YELLOW + "C - " + ChatColor.AQUA + option); break;
 				case 3 : plugin.sendMessage(playerName, ChatColor.YELLOW + "D - " + ChatColor.AQUA + option); break;
-
 			}
 						
 			n++;
@@ -603,7 +630,7 @@ public class ExamManager
 
 	public List<String> getExams()
 	{
-		List exams = new ArrayList();
+		List<String> exams = new ArrayList<String>();
 
 		for (String examName : this.examsConfig.getKeys(false))
 		{
