@@ -9,6 +9,7 @@ commands:
   exams:
     description: Controls the exam system
     usage: /exams
+    aliases: exam
 permissions:
     exams.*:
         description: Gives access to all vauld commands
