@@ -190,19 +190,12 @@ public class StudentManager
 		return true;
 	}
 
-	/*
-	public boolean isStudent(String playerName)
-	{
-		return studentsConfig.getString(playerName + ".Exam") != null;
-	}
-	*/
-
 	public boolean isDoingExam(String playerName)
 	{
 		return studentsConfig.getInt(playerName + ".ExamProgressIndex") > -1;
 	}
 
-	public int nextExamQuestion(String playerName)
+	public int nextExamQuestionIndex(String playerName)
 	{
 		int questionIndex = studentsConfig.getInt(playerName + ".ExamProgressIndex");
 
@@ -223,9 +216,9 @@ public class StudentManager
 	public int getExamQuestionIndexForStudent(String playerName)
 	{
 		List<String> questions = studentsConfig.getStringList(playerName + ".ExamQuestionIndices");
-		int examProgressIndex = studentsConfig.getInt(playerName + ".ExamProgressIndex");
+		int examProgressIndex = Integer.parseInt(studentsConfig.getString(playerName + ".ExamProgressIndex"));
 
-		return Integer.parseInt((String) questions.get(examProgressIndex));
+		return Integer.parseInt(questions.get(examProgressIndex));
 	}
 
 	public void setExamQuestionForStudent(String playerName, String question, List<String> options, String correctOption)
@@ -250,8 +243,8 @@ public class StudentManager
 	public void setExamForStudent(String playerName, String examName, List<String> questions)
 	{
 		studentsConfig.set(playerName + ".Exam", examName);
-		studentsConfig.set(playerName + ".ExamProgressIndex", Integer.valueOf(-1));
-		studentsConfig.set(playerName + ".ExamCorrectAnswers", Integer.valueOf(0));
+		studentsConfig.set(playerName + ".ExamProgressIndex", -1);
+		studentsConfig.set(playerName + ".ExamCorrectAnswers", 0);
 		studentsConfig.set(playerName + ".ExamQuestionIndices", questions);
 
 		plugin.logDebug("Setting question indices of size " + questions.size());
