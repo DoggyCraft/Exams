@@ -33,9 +33,6 @@ public class Commands
 					if(args[0].equalsIgnoreCase("reload"))
 					{
 						plugin.reloadSettings();
-						plugin.loadSettings();
-						plugin.getExamManager().load();
-						plugin.getStudentManager().load();
 
 						return true;
 					}
@@ -58,7 +55,7 @@ public class Commands
 			if (args.length == 0)
 			{
 				CommandHelp(sender);
-				plugin.log(sender.getName() + " /exam");
+				plugin.log(sender.getName() + " /exam(s)");
 				return true;
 			}
 			if (args.length == 1)
@@ -70,9 +67,7 @@ public class Commands
 						return false;
 					}
 
-					this.plugin.loadSettings();
-					this.plugin.getExamManager().load();
-					this.plugin.getStudentManager().load();
+					this.plugin.reloadSettings();
 					sender.sendMessage(this.plugin.getDescription().getFullName() + ": Reloaded configuration.");
 					this.plugin.log(sender.getName() + " /exams reload");
 					return true;
