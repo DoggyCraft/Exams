@@ -4,15 +4,15 @@ author: DogOnFire
 version: 0.2.6
 description: Exams in Minecraft!
 softdepend: [Vault]
-website: http://dev.bukkit.org/server-mods/exams
+website: https://dev.bukkit.org/projects/exams
 commands:
   exams:
-    description: Controls the exam system
+    description: Controls the Exams system
     usage: /exams
     aliases: exam
 permissions:
     exams.*:
-        description: Gives access to all vauld commands
+        description: Gives the Player access to control the Exams system
         default: false
         children:
             exams.student: true
