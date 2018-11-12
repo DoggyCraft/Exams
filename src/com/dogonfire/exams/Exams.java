@@ -76,9 +76,7 @@ public class Exams extends JavaPlugin
 	public void reloadSettings()
 	{
 		reloadConfig();
-
 		loadSettings();
-
 		examManager.load();
 	    studentManager.load();
 	}

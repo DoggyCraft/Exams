@@ -71,27 +71,8 @@ public class ExamManager
 		}
 
 		examsConfig = YamlConfiguration.loadConfiguration(examsConfigFile);
-
-		try
-		{
-			examsConfig.load(new InputStreamReader(new FileInputStream(examsConfigFile), Charset.forName("UTF-8")));
-		}
-		catch (FileNotFoundException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (InvalidConfigurationException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
+		// Fill out exams.yml with 2 example exams...
 		if(!examsConfigFile.exists())
 		{
 			String testExam = "Citizen";
@@ -100,7 +81,7 @@ public class ExamManager
 			
 			questions.add("Is it ok to grief?");
 			questions.add("Is it ok to spam?");
-			questions.add("Can i become admin?");
+			questions.add("Can I become admin?");
 			questions.add("Does admins give out free stuff?");
 			questions.add("Is this a RPG server?");
 			questions.add("Are you allowed to insult people?");
@@ -165,6 +146,28 @@ public class ExamManager
 			}			
 			
 			save();			
+			
+			this.plugin.log("Couldn't load exams.yml, generated an example file");
+		}
+
+		try
+		{
+			examsConfig.load(new InputStreamReader(new FileInputStream(examsConfigFile), Charset.forName("UTF-8")));
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (InvalidConfigurationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		//examsConfig = YamlConfiguration.loadConfiguration(examsConfigFile);
