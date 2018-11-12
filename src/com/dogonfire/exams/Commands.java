@@ -26,7 +26,7 @@ public class Commands
 
 		if (player == null)
 		{
-			if (cmd.getName().equalsIgnoreCase("exams"))
+			if ((cmd.getName().equalsIgnoreCase("exams")) || (cmd.getName().equalsIgnoreCase("exam")))
 			{
 				if (args.length == 1)
 				{
@@ -55,7 +55,7 @@ public class Commands
 			if (args.length == 0)
 			{
 				CommandHelp(sender);
-				plugin.log(sender.getName() + " /exam(s)");
+				plugin.log(sender.getName() + ": /exams");
 				return true;
 			}
 			if (args.length == 1)
@@ -68,8 +68,8 @@ public class Commands
 					}
 
 					this.plugin.reloadSettings();
-					sender.sendMessage(this.plugin.getDescription().getFullName() + ": Reloaded configuration.");
-					this.plugin.log(sender.getName() + " /exams reload");
+					sender.sendMessage(ChatColor.YELLOW + this.plugin.getDescription().getFullName() + ":" + ChatColor.AQUA + " Reloaded configuration.");
+					this.plugin.log(sender.getName() + ": /exams reload");
 					return true;
 				}
 				if (args[0].equalsIgnoreCase("help"))
@@ -80,7 +80,7 @@ public class Commands
 					}
 
 					CommandList(sender);
-					this.plugin.log(sender.getName() + " /exams help");
+					this.plugin.log(sender.getName() + ": /exams help");
 					return true;
 				}
 				if (args[0].equalsIgnoreCase("clean"))
@@ -92,7 +92,7 @@ public class Commands
 
 					CommandClean(sender);
 
-					this.plugin.log(sender.getName() + " /exams clean");
+					this.plugin.log(sender.getName() + ": /exams clean");
 					return true;
 				}
 				if ((args[0].equalsIgnoreCase("a")) || (args[0].equalsIgnoreCase("b")) || (args[0].equalsIgnoreCase("c")) || (args[0].equalsIgnoreCase("d")))
@@ -108,7 +108,7 @@ public class Commands
 							return false;
 						}
 
-						this.plugin.log(sender.getName() + " /exams list");
+						this.plugin.log(sender.getName() + ": /exams list");
 						return true;
 					}
 
@@ -128,7 +128,7 @@ public class Commands
 						}
 
 						CommandInfo(sender, args[1]);
-						this.plugin.log(sender.getName() + " /exams info " + args[1]);
+						this.plugin.log(sender.getName() + ": /exams info " + args[1]);
 						return true;
 					}
 
@@ -193,7 +193,14 @@ public class Commands
 		sender.sendMessage(ChatColor.AQUA + "/exams b" + ChatColor.WHITE + " - Answer A to an exam question");
 		sender.sendMessage(ChatColor.AQUA + "/exams c" + ChatColor.WHITE + " - Answer A to an exam question");
 		sender.sendMessage(ChatColor.AQUA + "/exams d" + ChatColor.WHITE + " - Answer A to an exam question");
-		sender.sendMessage(ChatColor.AQUA + "/exams reload" + ChatColor.WHITE + " - Reload Exams system");
+		if ((sender.isOp()) || (sender.hasPermission("exams.reload")))
+		{
+			sender.sendMessage(ChatColor.AQUA + "/exams reload" + ChatColor.WHITE + " - Reloads the Exams system");
+		}
+		if ((sender.isOp()) || (sender.hasPermission("exams.clean")))
+		{
+			sender.sendMessage(ChatColor.AQUA + "/exams clean" + ChatColor.WHITE + " - Cleans up expired student data");
+		}
 
 		return true;
 	}
@@ -206,7 +213,7 @@ public class Commands
 
 		if(sender!=null)
 		{
-			sender.sendMessage(ChatColor.AQUA + "Cleaned up data for " + ChatColor.YELLOW + students + ChatColor.AQUA + " students");
+			sender.sendMessage(ChatColor.YELLOW + this.plugin.getDescription().getFullName() + ":" + ChatColor.AQUA + " Cleaned up data for " + ChatColor.YELLOW + students + ChatColor.AQUA + " students");
 		}
 		
 		plugin.log("Cleaned up data for " + students + " students");
