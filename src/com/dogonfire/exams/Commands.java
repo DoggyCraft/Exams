@@ -120,6 +120,7 @@ public class Commands
 			{
 				if (args.length == 2)
 				{
+					
 					if (args[0].equalsIgnoreCase("info"))
 					{
 						if ((!player.isOp()) && (!player.hasPermission("exams.info")))
@@ -129,6 +130,17 @@ public class Commands
 
 						CommandInfo(sender, args[1]);
 						this.plugin.log(sender.getName() + ": /exams info " + args[1]);
+						return true;
+					}
+					if (args[0].equalsIgnoreCase("reset"))
+					{
+						if ((!player.isOp()) && (!player.hasPermission("exams.reset")))
+						{
+							return false;
+						}
+
+						CommandReset(sender, args[1]);
+						this.plugin.log(sender.getName() + ": /exams reset " + args[1]);
 						return true;
 					}
 
@@ -148,6 +160,14 @@ public class Commands
 
 	private boolean CommandInfo(CommandSender sender, String examName)
 	{
+		return true;
+	}
+	
+	private boolean CommandReset(CommandSender sender, String playerName)
+	{
+		plugin.getStudentManager().resetExamTime(playerName);
+		sender.sendMessage(ChatColor.YELLOW + this.plugin.getDescription().getFullName() + ":" + ChatColor.AQUA + " Reset of ExamTime for player " + ChatColor.YELLOW + playerName + ChatColor.AQUA + " was successful!");
+		
 		return true;
 	}
 
@@ -200,6 +220,10 @@ public class Commands
 		if ((sender.isOp()) || (sender.hasPermission("exams.clean")))
 		{
 			sender.sendMessage(ChatColor.AQUA + "/exams clean" + ChatColor.WHITE + " - Cleans up expired student data");
+		}
+		if ((sender.isOp()) || (sender.hasPermission("exams.reset")))
+		{
+			sender.sendMessage(ChatColor.AQUA + "/exams reset <player>" + ChatColor.WHITE + " - Resets ExamTime for a player");
 		}
 
 		return true;

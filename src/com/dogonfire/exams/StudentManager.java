@@ -60,6 +60,13 @@ public class StudentManager
 
 		save();
 	}
+	
+	public void resetExamTime(String playerName)
+	{
+		this.studentsConfig.set(playerName + ".LastExamTime", "");
+
+		save();
+	}
 
 	public boolean hasRecentExamAttempt(String believerName)
 	{

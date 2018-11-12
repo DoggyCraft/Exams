@@ -1,7 +1,7 @@
 name: Exams
 main: com.dogonfire.exams.Exams
 author: DogOnFire
-version: 0.2.6
+version: 0.2.7
 description: Exams in Minecraft!
 softdepend: [Vault]
 website: https://dev.bukkit.org/projects/exams
@@ -35,6 +35,9 @@ permissions:
     exams.list:
         description: Allows the Player to see the list of exams
         default: true
-    eaxms.info:
+    exams.info:
         description: Allows the Player to see details for an exam
-        default: true        
+        default: true
+    exams.reset:
+        description: Allows the Player to reset another players ExamTime
+        default: false
