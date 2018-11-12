@@ -1,2 +1,11 @@
-/bin
+#Libs and stuff
 /bukkit
+/lib
+
+# Eclipse Core
+/bin
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+.project
+/target/

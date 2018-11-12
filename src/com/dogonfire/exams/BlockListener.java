@@ -133,7 +133,7 @@ public class BlockListener implements Listener
 		else if (!plugin.getStudentManager().isDoingExam(player.getName()))
 		{
 			plugin.sendInfo(event.getPlayer(), ChatColor.RED + "The exam has not started yet!");
-			plugin.sendInfo(event.getPlayer(), ChatColor.RED + "Please come back at " + ChatColor.YELLOW + plugin.getExamManager().getExamStartTime(examName) + ChatColor.RED + " minecraft time");
+			plugin.sendInfo(event.getPlayer(), ChatColor.RED + "Please come back at " + ChatColor.YELLOW + plugin.getExamManager().getExamStartTime(examName) + ChatColor.RED + " Minecraft time");
 		}
 		else
 		{
