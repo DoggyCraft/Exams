@@ -1,0 +1,119 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.dogonfire</groupId>
+  <artifactId>exams</artifactId>
+  <version>0.2.6</version>
+  <name>Exams</name>
+  <description>Exams in Minecraft!</description>
+  <url>https://github.com/DogOnFire/Exams</url>
+  <repositories>
+    <repository>
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
+    </repository>
+    <repository>
+	  <id>vault-repo</id>
+	  <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+    </repository>
+	<!-- Commented out because repo is down...
+	<repository>
+		<id>pex-repo</id>
+		<url>http://pex-repo.aoeu.xyz</url>
+	</repository> -->
+	<repository>
+		<id>ess-repo</id>
+		<url>http://repo.ess3.net/content/groups/essentials</url>
+	</repository>
+  </repositories>
+  <dependencies>
+	<!-- Dependencies provided by repo -->
+    <!-- Spigot-API -->
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.10.2-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Vault -->
+    <dependency>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>VaultAPI</artifactId>
+      <version>1.6</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- EssentialsGroupManager -->
+    <dependency>
+      <groupId>net.ess3</groupId>
+      <artifactId>EssentialsGroupManager</artifactId>
+      <version>2.13.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- PermissionsEx - deprecated -->
+    <!-- Commented out because repo is down, added in system provided...
+	<dependency>
+      <groupId>ru.tehkode</groupId>
+      <artifactId>PermissionsEx</artifactId>
+      <version>RELEASE</version>
+      <scope>provided</scope>
+    </dependency> -->
+	<!-- Provided by system... -->
+    <!-- Spigot -->
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot</artifactId>
+      <version>LATEST</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/spigot-1.10.2.jar</systemPath>
+    </dependency>
+    <!-- PermissionsBukkit -->
+    <dependency>
+      <groupId>com.platymuus.bukkit</groupId>
+      <artifactId>permissions</artifactId>
+      <version>LATEST</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/PermissionsBukkit-2.5.jar</systemPath>
+    </dependency>
+    <!-- bPermissions -->
+    <dependency>
+      <groupId>de.bananaco</groupId>
+      <artifactId>bpermissions</artifactId>
+      <version>LATEST</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/bPermissions-2.12.jar</systemPath>
+    </dependency>
+	<!-- PermissionsEx -->
+	<dependency>
+      <groupId>ru.tehkode</groupId>
+      <artifactId>PermissionsEx</artifactId>
+      <version>LATEST</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/PermissionsEx.jar</systemPath>
+    </dependency>
+  </dependencies>
+  <build>
+    <defaultGoal>clean package install</defaultGoal>
+    <finalName>${project.name}-${project.version}</finalName>
+    <sourceDirectory>${project.basedir}/src/</sourceDirectory>
+    <resources>
+      <resource>
+        <targetPath>.</targetPath>
+        <filtering>true</filtering>
+        <directory>${project.basedir}/src/</directory>
+        <includes>
+          <include>*.yml</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
