@@ -27,10 +27,6 @@
 		<id>elmakers-repo</id>
 		<url>http://maven.elmakers.com/repository/</url>
 	</repository>
-	<repository>
-		<id>gravitydevelopment</id>
-		<url>http://repo.gravitydevelopment.net/</url>
-	</repository>
   </repositories>
   <dependencies>
 	<dependency>
