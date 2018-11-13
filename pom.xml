@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.dogonfire</groupId>
   <artifactId>exams</artifactId>
-  <version>0.2.7</version>
+  <version>0.2.8</version>
   <name>Exams</name>
   <description>Exams in Minecraft!</description>
   <url>https://github.com/DogOnFire/Exams</url>
@@ -15,83 +15,69 @@
 	  <id>vault-repo</id>
 	  <url>http://nexus.hc.to/content/repositories/pub_releases</url>
     </repository>
-	<!-- Commented out because repo is down...
-	<repository>
-		<id>pex-repo</id>
-		<url>http://pex-repo.aoeu.xyz</url>
-	</repository> -->
 	<repository>
 		<id>ess-repo</id>
 		<url>http://repo.ess3.net/content/groups/essentials</url>
 	</repository>
+	<repository>
+		<id>kitteh</id>
+		<url>http://repo.ess3.net/content/repositories/kitteh/</url>
+	</repository>
+	<repository>
+		<id>elmakers-repo</id>
+		<url>http://maven.elmakers.com/repository/</url>
+	</repository>
+	<repository>
+		<id>gravitydevelopment</id>
+		<url>http://repo.gravitydevelopment.net/</url>
+	</repository>
   </repositories>
   <dependencies>
-	<!-- Dependencies provided by repo -->
-    <!-- Spigot-API -->
+	<dependency>
+      <groupId>ru.tehkode</groupId>
+      <artifactId>PermissionsEx</artifactId>
+      <version>1.22.3</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>net.gravitydevelopment.updater</groupId>
+          <artifactId>updater</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
       <version>1.10.2-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
-    <!-- Vault -->
     <dependency>
       <groupId>net.milkbowl.vault</groupId>
       <artifactId>VaultAPI</artifactId>
       <version>1.6</version>
       <scope>provided</scope>
     </dependency>
-    <!-- EssentialsGroupManager -->
     <dependency>
       <groupId>net.ess3</groupId>
       <artifactId>EssentialsGroupManager</artifactId>
       <version>2.13.1</version>
       <scope>provided</scope>
     </dependency>
-    <!-- PermissionsEx - deprecated -->
-    <!-- Commented out because repo is down, added in system provided...
-	<dependency>
-      <groupId>ru.tehkode</groupId>
-      <artifactId>PermissionsEx</artifactId>
-      <version>RELEASE</version>
-      <scope>provided</scope>
-    </dependency> -->
-	<!-- Provided by system... -->
-    <!-- Spigot -->
-    <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot</artifactId>
-      <version>LATEST</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/spigot-1.10.2.jar</systemPath>
-    </dependency>
-    <!-- PermissionsBukkit -->
-    <dependency>
-      <groupId>com.platymuus.bukkit</groupId>
-      <artifactId>permissions</artifactId>
-      <version>LATEST</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/PermissionsBukkit-2.5.jar</systemPath>
-    </dependency>
-    <!-- bPermissions -->
     <dependency>
       <groupId>de.bananaco</groupId>
-      <artifactId>bpermissions</artifactId>
-      <version>LATEST</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/bPermissions-2.12.jar</systemPath>
+      <artifactId>bPermissions</artifactId>
+      <version>2.12-DEV</version>
+      <scope>provided</scope>
     </dependency>
-	<!-- PermissionsEx -->
-	<dependency>
-      <groupId>ru.tehkode</groupId>
-      <artifactId>PermissionsEx</artifactId>
-      <version>LATEST</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/PermissionsEx.jar</systemPath>
+    <dependency>
+      <groupId>com.platymuus</groupId>
+      <artifactId>bukkit-permissions</artifactId>
+      <version>2.3</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
   <build>
-    <defaultGoal>clean package install</defaultGoal>
+    <defaultGoal>clean package</defaultGoal>
     <finalName>${project.name}-${project.version}</finalName>
     <sourceDirectory>${project.basedir}/src/</sourceDirectory>
     <resources>
