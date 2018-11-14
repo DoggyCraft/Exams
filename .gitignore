@@ -1,6 +1,7 @@
-#Libs and stuff
+# Libs and stuff
 /bukkit
 /lib
+/jar
 
 # Eclipse Core
 /bin
@@ -9,4 +10,6 @@
 .classpath
 .project
 /.settings/
+
+# Maven build
 /target/

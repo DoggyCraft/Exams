@@ -42,7 +42,7 @@ public class ExamManager
 
 		if (this.plugin.getServer().getPluginManager().getPlugin("Vault") != null)
 		{
-			RegisteredServiceProvider economyProvider = plugin.getServer().getServicesManager().getRegistration(Economy.class);
+			RegisteredServiceProvider<Economy> economyProvider = plugin.getServer().getServicesManager().getRegistration(Economy.class);
 
 			if (economyProvider != null)
 			{
@@ -105,9 +105,8 @@ public class ExamManager
 				options.add("Maybe");
 				options.add("I dont know");
 
-				this.examsConfig.set(testExam + ".Questions." + key + ".Question", question);
-				this.examsConfig.set(testExam + ".Questions." + key + ".Options", options);
-				this.examsConfig.set(testExam + ".Questions." + key + ".CorrectOption", "B");
+				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
+				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "B");
 				key++;
 			}
 					
@@ -133,15 +132,14 @@ public class ExamManager
 
 			for (String question : questions)
 			{
-				List options = new ArrayList();
+				List<String> options = new ArrayList();
 				options.add("Cobweb and spidereyes");
 				options.add("Light and darkness");
 				options.add("No idea");
 				options.add("Blue monday");
 
-				this.examsConfig.set(testExam + ".Questions." + key + ".Question", question);
-				this.examsConfig.set(testExam + ".Questions." + key + ".Options", options);
-				this.examsConfig.set(testExam + ".Questions." + key + ".CorrectOption", "A");
+				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
+				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "A");
 				key++;
 			}			
 			
@@ -662,7 +660,7 @@ public class ExamManager
 
 		if (this.plugin.examPricesEnabled)
 		{
-			if ((price > 0.0D) && (!economy.has(playerName, price)))
+			if (price > 0.0D && !economy.has(playerName, price))
 			{
 				plugin.sendMessage(playerName, ChatColor.RED + "You need " + economy.format(getExamPrice(examName)) + " to take this exam");
 				return false;
