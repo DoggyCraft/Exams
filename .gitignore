@@ -1,6 +1,7 @@
-#Libs and stuff
+# Libs and stuff
 /bukkit
 /lib
+/jar
 
 # Eclipse Core
 /bin
@@ -8,4 +9,7 @@
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 .project
+/.settings/
+
+# Maven build
 /target/
