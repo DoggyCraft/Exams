@@ -1,3 +1,4 @@
 language: java
 addons:
   artifacts: true
+    working_dir: target
