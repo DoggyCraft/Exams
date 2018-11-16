@@ -8,10 +8,6 @@
   <url>https://github.com/DogOnFire/Exams</url>
   <repositories>
     <repository>
-      <id>pex-repo</id>
-      <url>http://pex-repo.aoeu.xyz</url>
-    </repository>    
-    <repository>
       <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
     </repository>
