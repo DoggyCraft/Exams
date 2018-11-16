@@ -15,16 +15,18 @@ import de.bananaco.bpermissions.api.WorldManager;
 import de.bananaco.bpermissions.api.util.Calculable;
 import de.bananaco.bpermissions.api.util.CalculableType;
 
+
 import ru.tehkode.permissions.PermissionGroup;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
+/*
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.anjocaido.groupmanager.data.User;
 import org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder;
-
+*/
 
 public class PermissionsManager
 {
@@ -34,8 +36,6 @@ public class PermissionsManager
 	private PermissionsPlugin	permissionsBukkit	= null;
 
 	private PermissionManager	pex					= null;
-
-	private GroupManager		groupManager		= null;
 
 	public PermissionsManager(Exams p)
 	{
@@ -57,12 +57,6 @@ public class PermissionsManager
 			plugin.log("Using PermissionsEx.");
 			pluginName = "PermissionsEx";
 			pex = PermissionsEx.getPermissionManager();
-		}
-		else if (pluginManager.getPlugin("GroupManager") != null)
-		{
-			plugin.log("Using GroupManager");
-			pluginName = "GroupManager";
-			groupManager = ((GroupManager) pluginManager.getPlugin("GroupManager"));
 		}
 		else if (pluginManager.getPlugin("bPermissions") != null)
 		{
@@ -95,17 +89,6 @@ public class PermissionsManager
 		if (pluginName.equals("PermissionsEx"))
 		{
 			return pex.has(player, node);
-		}
-		if (pluginName.equals("GroupManager"))
-		{
-			AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissionsByPlayerName(player.getName());
-
-			if (handler == null)
-			{
-				return false;
-			}
-
-			return handler.permission(player, node);
 		}
 		if (pluginName.equals("bPermissions"))
 		{
@@ -155,17 +138,6 @@ public class PermissionsManager
 
 			return pex.getUser(playerName).getGroupsNames()[0];
 		}
-		if (pluginName.equals("GroupManager"))
-		{
-			AnjoPermissionsHandler handler = groupManager.getWorldsHolder().getWorldPermissionsByPlayerName(playerName);
-
-			if (handler == null)
-			{
-				return "";
-			}
-
-			return handler.getGroup(playerName);
-		}
 		if (pluginName.equals("bPermissions"))
 		{
 			de.bananaco.bpermissions.api.World w = WorldManager.getInstance().getWorld(playerName);
@@ -196,17 +168,6 @@ public class PermissionsManager
 		if (this.pluginName.equals("PermissionsEx"))
 		{
 			return this.pex.getUser(this.pluginName).getOwnSuffix();
-		}
-		if (this.pluginName.equals("GroupManager"))
-		{
-			AnjoPermissionsHandler handler = this.groupManager.getWorldsHolder().getWorldPermissionsByPlayerName(playerName);
-
-			if (handler == null)
-			{
-				return "";
-			}
-
-			return handler.getUserPrefix(playerName);
 		}
 		if (this.pluginName.equals("bPermissions"))
 		{
@@ -266,42 +227,6 @@ public class PermissionsManager
 			for (World world : plugin.getServer().getWorlds())
 			{
 				ApiLayer.setGroup(world.getName(), CalculableType.USER, playerName, groupName);
-			}
-		}
-		else if (pluginName.equals("GroupManager"))
-		{
-			OverloadedWorldHolder owh;
-
-			owh = this.groupManager.getWorldsHolder().getWorldDataByPlayerName(playerName);
-
-			if (owh == null)
-			{
-				return;
-			}
-
-			User user = owh.getUser(playerName);
-
-			if (user == null)
-			{
-				plugin.log("No player with the name '" + groupName + "'");
-				return;
-			}
-
-			org.anjocaido.groupmanager.data.Group group = owh.getGroup(groupName);
-
-			if (group == null)
-			{
-				plugin.log("No group with the name '" + groupName + "'");
-				return;
-			}
-
-			user.setGroup(group);
-
-			Player p = Bukkit.getPlayer(playerName);
-
-			if (p != null)
-			{
-				GroupManager.BukkitPermissions.updatePermissions(p);
 			}
 		}
 	}
