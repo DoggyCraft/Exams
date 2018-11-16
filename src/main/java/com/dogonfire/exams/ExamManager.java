@@ -1,4 +1,4 @@
-package com.dogonfire.exams;
+package main.java.com.dogonfire.exams;
 
 import java.io.File;
 import java.io.FileInputStream;
