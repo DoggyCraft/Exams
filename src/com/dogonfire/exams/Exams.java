@@ -9,8 +9,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.dogonfire.exams.Metrics;
-
 public class Exams extends JavaPlugin
 {
 	private ExamManager			examManager			= null;
