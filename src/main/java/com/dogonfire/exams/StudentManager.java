@@ -1,4 +1,4 @@
-package com.dogonfire.exams;
+package main.java.com.dogonfire.exams;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -63,8 +63,8 @@ public class StudentManager
 	
 	public void resetExamTime(String playerName)
 	{
-		this.studentsConfig.set(playerName + ".LastExamTime", "");
-
+		this.studentsConfig.set(playerName + ".LastExamTime", null);
+		
 		save();
 	}
 
@@ -279,7 +279,7 @@ public class StudentManager
 	public void removeStudent(String studentName)
 	{
 		studentsConfig.set(studentName + ".Exam", null);
-		studentsConfig.set(studentName + ".ExamProgressIndex", -1);
+		studentsConfig.set(studentName + ".ExamProgressIndex", null);
 		studentsConfig.set(studentName + ".ExamQuestionIndices", null);
 		studentsConfig.set(studentName + ".ExamQuestion", null);
 		studentsConfig.set(studentName + ".ExamQuestionOptions", null);

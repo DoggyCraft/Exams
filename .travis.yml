@@ -1,1 +1,8 @@
 language: java
+deploy:
+  provider: releases
+  api_key: e92d036e275958c01d1a342f577ca959540f8014
+  file: Exams.jar
+  skip_cleanup: true
+  on:
+    tags: true

@@ -1,4 +1,4 @@
-package com.dogonfire.exams;
+package main.java.com.dogonfire.exams;
 
 //import java.util.Comparator;
 import org.bukkit.ChatColor;
@@ -157,7 +157,16 @@ public class Commands
 	
 	private boolean CommandReset(CommandSender sender, String playerName)
 	{
+		String originalRank = plugin.getStudentManager().getOriginalRank(playerName);
+		
+		if(originalRank!=null)
+		{			
+			plugin.getPermissionsManager().setGroup(playerName, originalRank);	
+		}
+
+		plugin.getStudentManager().removeStudent(playerName);
 		plugin.getStudentManager().resetExamTime(playerName);
+		
 		sender.sendMessage(ChatColor.YELLOW + this.plugin.getDescription().getFullName() + ":" + ChatColor.AQUA + " Reset of ExamTime for player " + ChatColor.YELLOW + playerName + ChatColor.AQUA + " was successful!");
 		
 		return true;

@@ -1,4 +1,4 @@
-package com.dogonfire.exams;
+package main.java.com.dogonfire.exams;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;

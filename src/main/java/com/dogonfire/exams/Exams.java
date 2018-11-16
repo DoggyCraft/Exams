@@ -1,4 +1,4 @@
-package com.dogonfire.exams;
+package main.java.com.dogonfire.exams;
 
 import java.util.logging.Logger;
 
@@ -8,8 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.dogonfire.exams.Metrics;
 
 public class Exams extends JavaPlugin
 {

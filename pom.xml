@@ -78,7 +78,7 @@
     <sourceDirectory>${project.basedir}/src/</sourceDirectory>
     <resources>
       <resource>
-        <targetPath>.</targetPath>
+        <targetPath>${project.basedir}/target/</targetPath>
         <filtering>true</filtering>
         <directory>${project.basedir}/src/</directory>
         <includes>
@@ -99,6 +99,7 @@
     </plugins>
   </build>
   <properties>
+     <jdk.version>1.8</jdk.version>
      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 </project>

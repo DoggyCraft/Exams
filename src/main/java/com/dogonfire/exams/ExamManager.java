@@ -1,4 +1,4 @@
-package com.dogonfire.exams;
+package main.java.com.dogonfire.exams;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -154,17 +154,14 @@ public class ExamManager
 		}
 		catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (InvalidConfigurationException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -193,10 +190,6 @@ public class ExamManager
 		}
 	}
 
-	public void update()
-	{
-	}
-
 	public boolean isExamOpen(World world, String examName)
 	{
 		long time = world.getFullTime() % 24000L;
@@ -216,6 +209,38 @@ public class ExamManager
 		return (time >= startTime) && (time <= endTime);
 	}
 
+	public boolean handleNewExamPrerequisites(Player player, String examName)
+	{
+		// Check for required RANK
+		String requiredRank = plugin.getExamManager().getRequiredRankForExam(player.getName(), examName);
+		if (requiredRank!=null && !plugin.getPermissionsManager().getGroup(player.getName()).equalsIgnoreCase(requiredRank))
+		{
+			plugin.sendInfo(player, ChatColor.RED + "Only players with the " + ChatColor.YELLOW + requiredRank + ChatColor.RED + " rank can take this exam!");
+			return false;			
+		}
+
+		// Check for required EXAM
+		String requiredExam = plugin.getExamManager().getUnpassedRequiredExamForExam(player.getName(), examName);
+		
+		if (requiredExam!=null)
+		{
+			plugin.sendInfo(player, ChatColor.RED + "You must pass the " + ChatColor.YELLOW + requiredExam + ChatColor.RED + " exam before taking this exam!");
+			return false;	 		
+		}
+
+		if (plugin.getExamManager().signupForExam(player.getName(), examName))
+		{
+			plugin.sendMessage(player.getName(), ChatColor.AQUA + "Click the sign again to start this exam!");
+			plugin.sendToAll(ChatColor.AQUA + player.getName() + " signed up for the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam!");
+		}
+		else
+		{
+			return false;
+		}
+
+		return true;		
+	}
+	
 	public String getExamFromSign(Block clickedBlock)
 	{
 		if (clickedBlock.getType() != Material.WALL_SIGN)

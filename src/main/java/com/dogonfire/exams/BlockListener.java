@@ -1,4 +1,4 @@
-package com.dogonfire.exams;
+package main.java.com.dogonfire.exams;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -74,33 +74,8 @@ public class BlockListener implements Listener
 
 		if(currentExam==null)
 		{
-			// Check for required RANK
-			String requiredRank = plugin.getExamManager().getRequiredRankForExam(player.getName(), examName);
-			if (requiredRank!=null && !plugin.getPermissionsManager().getGroup(player.getName()).equalsIgnoreCase(requiredRank))
-			{
-				plugin.sendInfo(event.getPlayer(), ChatColor.RED + "Only players with the " + ChatColor.YELLOW + requiredRank + ChatColor.RED + " rank can take this exam!");
-				return;			
-			}
-	
-			// Check for required EXAM
-			String requiredExam = plugin.getExamManager().getUnpassedRequiredExamForExam(player.getName(), examName);
+			plugin.getExamManager().handleNewExamPrerequisites(player, examName);
 			
-			if (requiredExam!=null)
-			{
-				plugin.sendInfo(event.getPlayer(), ChatColor.RED + "You must pass the " + ChatColor.YELLOW + requiredExam + ChatColor.RED + " exam before taking this exam!");
-				return;			
-			}
-
-			if (plugin.getExamManager().signupForExam(player.getName(), examName))
-			{
-				plugin.sendMessage(player.getName(), ChatColor.AQUA + "Click the sign again to start this exam!");
-				plugin.sendToAll(ChatColor.AQUA + player.getName() + " signed up for the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam!");
-			}
-			else
-			{
-				return;
-			}
-
 			return;
 		}
 
