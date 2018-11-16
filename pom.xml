@@ -78,8 +78,12 @@
     <sourceDirectory>${project.basedir}/src/</sourceDirectory>
     <resources>
       <resource>
+        <targetPath>${project.basedir}/target/</targetPath>
         <filtering>true</filtering>
         <directory>${project.basedir}/src/</directory>
+        <includes>
+          <include>*.yml</include>
+        </includes>
       </resource>
     </resources>
     <plugins>
