@@ -1,4 +1,4 @@
-package main.java.com.dogonfire.exams;
+package com.dogonfire.exams;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -154,17 +154,14 @@ public class ExamManager
 		}
 		catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (InvalidConfigurationException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

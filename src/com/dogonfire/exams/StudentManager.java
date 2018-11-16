@@ -1,4 +1,4 @@
-package main.java.com.dogonfire.exams;
+package com.dogonfire.exams;
 
 import java.io.File;
 import java.text.DateFormat;
