@@ -190,7 +190,7 @@ public class StudentManager
 	{
 		studentsConfig.set(playerName + ".Exam", examName);
 		studentsConfig.set(playerName + ".ExamCorrectAnswers", 0);
-		studentsConfig.set(playerName + ".ExamProgressIndex", -1);
+		studentsConfig.set(playerName + ".ExamProgressIndex", null);
 
 		save();
 
@@ -199,7 +199,7 @@ public class StudentManager
 
 	public boolean isDoingExam(String playerName)
 	{
-		return studentsConfig.getInt(playerName + ".ExamProgressIndex") > -1;
+		return studentsConfig.getInt(playerName + ".ExamProgressIndex")!=null;
 	}
 
 	public int nextExamQuestionIndex(String playerName)
@@ -250,7 +250,7 @@ public class StudentManager
 	public void setExamForStudent(String playerName, String examName, List<String> questions)
 	{
 		studentsConfig.set(playerName + ".Exam", examName);
-		studentsConfig.set(playerName + ".ExamProgressIndex", -1);
+		studentsConfig.set(playerName + ".ExamProgressIndex", null);
 		studentsConfig.set(playerName + ".ExamCorrectAnswers", 0);
 		studentsConfig.set(playerName + ".ExamQuestionIndices", questions);
 
