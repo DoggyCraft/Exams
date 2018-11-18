@@ -38,13 +38,13 @@ public class Commands
 					}
 					else if (args[0].equalsIgnoreCase("clean"))
 					{
-						CommandClean(sender);
+						commandClean(sender);
 						
 						return true;
 					}
 				}
 
-				CommandExamList(player);
+				commandExamList(player);
 			}
 
 			return true;
@@ -54,7 +54,7 @@ public class Commands
 		{
 			if (args.length == 0)
 			{
-				CommandHelp(sender);
+				commandHelp(sender);
 				return true;
 			}
 			if (args.length == 1)
@@ -77,7 +77,7 @@ public class Commands
 						return false;
 					}
 
-					CommandList(sender);
+					commandList(sender);
 					return true;
 				}
 				if (args[0].equalsIgnoreCase("clean"))
@@ -87,12 +87,12 @@ public class Commands
 						return false;
 					}
 
-					CommandClean(sender);
+					commandClean(sender);
 					return true;
 				}
 				if ((args[0].equalsIgnoreCase("a")) || (args[0].equalsIgnoreCase("b")) || (args[0].equalsIgnoreCase("c")) || (args[0].equalsIgnoreCase("d")))
 				{
-					CommandAnswer(player, args[0].toLowerCase());
+					commandAnswer(player, args[0].toLowerCase());
 				}
 				else
 				{
@@ -122,7 +122,7 @@ public class Commands
 							return false;
 						}
 
-						CommandInfo(sender, args[1]);
+						commandInfo(sender, args[1]);
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("reset"))
@@ -132,7 +132,7 @@ public class Commands
 							return false;
 						}
 
-						CommandReset(sender, args[1]);
+						commandReset(sender, args[1]);
 						return true;
 					}
 
@@ -150,12 +150,12 @@ public class Commands
 		return true;
 	}
 
-	private boolean CommandInfo(CommandSender sender, String examName)
+	private boolean commandInfo(CommandSender sender, String examName)
 	{
 		return true;
 	}
 	
-	private boolean CommandReset(CommandSender sender, String playerName)
+	private boolean commandReset(CommandSender sender, String playerName)
 	{
 		String originalRank = plugin.getStudentManager().getOriginalRank(playerName);
 		
@@ -172,7 +172,7 @@ public class Commands
 		return true;
 	}
 
-	private void CommandAnswer(Player player, String answer)
+	private void commandAnswer(Player player, String answer)
 	{
 		if (!plugin.getStudentManager().isDoingExam(player.getName()))
 		{
@@ -193,7 +193,7 @@ public class Commands
 		}
 	}
 
-	private boolean CommandHelp(CommandSender sender)
+	private boolean commandHelp(CommandSender sender)
 	{
 		sender.sendMessage(ChatColor.YELLOW + "------------------ " + plugin.getDescription().getFullName() + " ------------------");
 		sender.sendMessage(ChatColor.AQUA + "By DogOnFire");
@@ -205,7 +205,7 @@ public class Commands
 		return true;
 	}
 
-	private boolean CommandList(CommandSender sender)
+	private boolean commandList(CommandSender sender)
 	{
 		sender.sendMessage(ChatColor.YELLOW + "------------------ " + this.plugin.getDescription().getFullName() + " ------------------");
 		sender.sendMessage(ChatColor.AQUA + "/exams" + ChatColor.WHITE + " - Basic info");
@@ -230,7 +230,7 @@ public class Commands
 		return true;
 	}
 
-	private boolean CommandClean(CommandSender sender)
+	private boolean commandClean(CommandSender sender)
 	{
 		int students = 0;
 
@@ -246,7 +246,7 @@ public class Commands
 		return true;
 	}
 
-	private void CommandExamList(CommandSender sender)
+	private void commandExamList(CommandSender sender)
 	{
 	}
 }
