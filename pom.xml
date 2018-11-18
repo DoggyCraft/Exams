@@ -82,7 +82,7 @@
         <filtering>true</filtering>
         <directory>${project.basedir}/src/</directory>
         <includes>
-          <include>*.yml</include>
+          <include>plugin.yml</include>
         </includes>
       </resource>
     </resources>

@@ -99,7 +99,7 @@ public class ExamManager
 			
 			for (String question : questions)
 			{
-				List options = new ArrayList();
+				List<String> options = new ArrayList<String>();
 				options.add("Yes");
 				options.add("No");
 				options.add("Maybe");
