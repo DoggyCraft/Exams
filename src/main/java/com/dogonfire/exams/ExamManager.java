@@ -93,9 +93,7 @@ public class ExamManager
 			this.examsConfig.set(testExam + ".NumberOfQuestions", 3);
 			this.examsConfig.set(testExam + ".Questions", questions);
 
-			int n = 0;
-			
-			int key = 1;
+			//int n = 0;
 			
 			for (String question : questions)
 			{
@@ -107,7 +105,6 @@ public class ExamManager
 
 				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
 				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "B");
-				key++;
 			}
 					
 			testExam = "Wizard";
@@ -128,11 +125,9 @@ public class ExamManager
 			this.examsConfig.set(testExam + ".NumberOfQuestions", 3);
 			this.examsConfig.set(testExam + ".Questions", questions);
 
-			key = 1;
-
 			for (String question : questions)
 			{
-				List<String> options = new ArrayList();
+				List<String> options = new ArrayList<String>();
 				options.add("Cobweb and spidereyes");
 				options.add("Light and darkness");
 				options.add("No idea");
@@ -140,7 +135,6 @@ public class ExamManager
 
 				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
 				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "A");
-				key++;
 			}			
 			
 			save();			
@@ -308,9 +302,9 @@ public class ExamManager
 			return false;
 		}
 
-		BlockState state = clickedBlock.getState();
+		clickedBlock.getState();
 
-		Sign sign = (Sign) state;
+		//Sign sign = (Sign) state;
 
 		if (!lines[0].equalsIgnoreCase("Exam"))
 		{
@@ -337,7 +331,7 @@ public class ExamManager
 		plugin.sendMessage(playerName, ChatColor.AQUA + " Exam score:  " + ChatColor.YELLOW + score + ChatColor.AQUA + " points");
 		plugin.sendMessage(playerName, ChatColor.AQUA + " Points needed: " + ChatColor.YELLOW + plugin.requiredExamScore + ChatColor.AQUA + " points");
 
-		Player player = plugin.getServer().getPlayer(playerName);
+		//Player player = plugin.getServer().getPlayer(playerName);
 
 		plugin.getStudentManager().setLastExamTime(playerName);
 		

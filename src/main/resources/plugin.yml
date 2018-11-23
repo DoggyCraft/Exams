@@ -1,5 +1,5 @@
 name: Exams
-main: com.dogonfire.exams.Exams
+main: main.java.com.dogonfire.exams.Exams
 author: DogOnFire
 version: 0.2.9
 description: Exams in Minecraft!
