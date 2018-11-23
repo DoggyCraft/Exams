@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.dogonfire</groupId>
   <artifactId>exams</artifactId>
-  <version>0.2.8</version>
+  <version>0.2.9</version>
   <name>Exams</name>
   <description>Exams in Minecraft!</description>
   <url>https://github.com/DogOnFire/Exams</url>

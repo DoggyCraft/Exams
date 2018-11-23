@@ -20,7 +20,7 @@ public class BlockListener implements Listener
 	}
 
 	@EventHandler
-	public void OnSignChange(SignChangeEvent event)
+	public void onSignChange(SignChangeEvent event)
 	{
 		Player player = event.getPlayer();
 
@@ -49,7 +49,7 @@ public class BlockListener implements Listener
 	}
 
 	@EventHandler
-	public void OnPlayerInteract(PlayerInteractEvent event)
+	public void onPlayerInteract(PlayerInteractEvent event)
 	{
 		Player player = event.getPlayer();
 
