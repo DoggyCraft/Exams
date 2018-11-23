@@ -16,7 +16,7 @@ public class PermissionsManager
 	{
 		this.plugin = p;
 			
-		RegisteredServiceProvider<Permission> permissionProvider = plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+		RegisteredServiceProvider<Permission> permissionProvider = plugin.getServer().getServicesManager().getRegistration(Permission.class);
 		vaultPermission = permissionProvider.getProvider();
 	}
 

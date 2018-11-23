@@ -264,9 +264,9 @@ public class StudentManager
 		return studentsConfig.getInt(playerName + ".ExamCorrectAnswers");
 	}
 
-	public String getExamForStudent(String believerName)
+	public String getExamForStudent(String playerName)
 	{
-		return studentsConfig.getString(believerName + ".Exam");
+		return studentsConfig.getString(playerName + ".Exam");
 	}
 
 	public Set<String> getStudents()

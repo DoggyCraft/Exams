@@ -55,7 +55,6 @@ public class Commands
 			if (args.length == 0)
 			{
 				commandHelp(sender);
-				plugin.log(sender.getName() + ": /exams");
 				return true;
 			}
 			if (args.length == 1)
@@ -69,7 +68,6 @@ public class Commands
 
 					this.plugin.reloadSettings();
 					sender.sendMessage(ChatColor.YELLOW + this.plugin.getDescription().getFullName() + ":" + ChatColor.AQUA + " Reloaded configuration.");
-					this.plugin.log(sender.getName() + ": /exams reload");
 					return true;
 				}
 				if (args[0].equalsIgnoreCase("help"))
@@ -80,7 +78,7 @@ public class Commands
 					}
 
 					commandList(sender);
-					this.plugin.log(sender.getName() + ": /exams help");
+
 					return true;
 				}
 				if (args[0].equalsIgnoreCase("clean"))
@@ -91,8 +89,6 @@ public class Commands
 					}
 
 					commandClean(sender);
-
-					this.plugin.log(sender.getName() + ": /exams clean");
 					return true;
 				}
 				if ((args[0].equalsIgnoreCase("a")) || (args[0].equalsIgnoreCase("b")) || (args[0].equalsIgnoreCase("c")) || (args[0].equalsIgnoreCase("d")))
@@ -108,7 +104,6 @@ public class Commands
 							return false;
 						}
 
-						this.plugin.log(sender.getName() + ": /exams list");
 						return true;
 					}
 
@@ -129,7 +124,6 @@ public class Commands
 						}
 
 						commandInfo(sender, args[1]);
-						this.plugin.log(sender.getName() + ": /exams info " + args[1]);
 						return true;
 					}
 					if (args[0].equalsIgnoreCase("reset"))
@@ -140,7 +134,6 @@ public class Commands
 						}
 
 						commandReset(sender, args[1]);
-						this.plugin.log(sender.getName() + ": /exams reset " + args[1]);
 						return true;
 					}
 
