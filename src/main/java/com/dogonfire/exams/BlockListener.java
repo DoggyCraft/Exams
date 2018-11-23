@@ -69,7 +69,13 @@ public class BlockListener implements Listener
 		{
 			return;
 		}
-
+		
+		if (!plugin.getExamManager().examExists(examName))
+		{
+			event.getPlayer().sendMessage(ChatColor.RED + "There is no exam called '" + examName + "'!");
+			return;
+		}
+		
 		String currentExam = plugin.getStudentManager().getExamForStudent(player.getName());
 
 		if(currentExam==null)
