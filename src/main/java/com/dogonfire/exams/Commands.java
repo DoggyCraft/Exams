@@ -78,6 +78,7 @@ public class Commands
 					}
 
 					commandList(sender);
+
 					return true;
 				}
 				if (args[0].equalsIgnoreCase("clean"))

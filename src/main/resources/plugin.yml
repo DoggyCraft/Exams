@@ -1,7 +1,7 @@
 name: Exams
 main: main.java.com.dogonfire.exams.Exams
 author: DogOnFire
-version: 0.2.10
+version: ${project.version}
 description: Exams in Minecraft!
 softdepend: [Vault]
 website: https://dev.bukkit.org/projects/exams

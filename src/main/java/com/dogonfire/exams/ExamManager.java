@@ -92,8 +92,6 @@ public class ExamManager
 			this.examsConfig.set(testExam + ".Price", 100);
 			this.examsConfig.set(testExam + ".NumberOfQuestions", 3);
 			this.examsConfig.set(testExam + ".Questions", questions);
-
-			//int n = 0;
 			
 			for (String question : questions)
 			{
@@ -286,12 +284,7 @@ public class ExamManager
 
 		String[] lines = sign.getLines();
 
-		if (!lines[0].equalsIgnoreCase("Exam"))
-		{
-			return false;
-		}
-
-		return true;
+		return lines[0].equalsIgnoreCase("Exam");
 	}
 
 	public boolean isExamSign(Block clickedBlock, String[] lines)
@@ -303,8 +296,6 @@ public class ExamManager
 		}
 
 		clickedBlock.getState();
-
-		//Sign sign = (Sign) state;
 
 		if (!lines[0].equalsIgnoreCase("Exam"))
 		{
@@ -701,10 +692,13 @@ public class ExamManager
 
 		plugin.getStudentManager().signupForExam(playerName, examName);
 
-		if (plugin.examPricesEnabled && (price > 0.0D))
+		if (plugin.examPricesEnabled)
 		{
-			economy.withdrawPlayer(playerName, price);
-			plugin.sendMessage(playerName, ChatColor.AQUA + "You paid " + ChatColor.YELLOW + economy.format(getExamPrice(examName)) + ChatColor.AQUA + " for signing up to this exam");
+			if(price > 0.0D)
+			{
+				economy.withdrawPlayer(playerName, price);
+				plugin.sendMessage(playerName, ChatColor.AQUA + "You paid " + ChatColor.YELLOW + economy.format(getExamPrice(examName)) + ChatColor.AQUA + " for signing up to this exam");
+			}
 		}
 
 		return true;
