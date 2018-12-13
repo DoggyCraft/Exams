@@ -170,6 +170,11 @@ public class StudentManager
 		return studentsConfig.getString(playerName + ".OriginalRank");
 	}
 	
+	public String getLastExamTime(String playerName)
+	{
+		return studentsConfig.getString(playerName + ".LastExamTime");
+	}
+	
 	public void setPassedExam(String playerName, String exam)
 	{
 		List<String> passedExams = getPassedExams(playerName);
