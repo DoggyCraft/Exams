@@ -83,7 +83,7 @@ public class Commands
 				}
 				if (args[0].equalsIgnoreCase("clean"))
 				{
-					if ((!player.isOp()) && (!player.hasPermission("exams.clean")))
+					if (!player.isOp() && !player.hasPermission("exams.clean"))
 					{
 						return false;
 					}
@@ -118,7 +118,7 @@ public class Commands
 					
 					if (args[0].equalsIgnoreCase("info"))
 					{
-						if ((!player.isOp()) && (!player.hasPermission("exams.info")))
+						if (!player.isOp() && !player.hasPermission("exams.info"))
 						{
 							return false;
 						}
@@ -128,12 +128,22 @@ public class Commands
 					}
 					if (args[0].equalsIgnoreCase("reset"))
 					{
-						if ((!player.isOp()) && (!player.hasPermission("exams.reset")))
+						if (!player.isOp() && !player.hasPermission("exams.reset"))
 						{
 							return false;
 						}
 
 						commandReset(sender, args[1]);
+						return true;
+					}
+					if (args[0].equalsIgnoreCase("test"))
+					{
+						if (!player.isOp() && !player.hasPermission("exams.test"))
+						{
+							return false;
+						}
+
+						commandTest(sender, args);
 						return true;
 					}
 
@@ -170,6 +180,63 @@ public class Commands
 		
 		sender.sendMessage(ChatColor.YELLOW + this.plugin.getDescription().getFullName() + ":" + ChatColor.AQUA + " Reset of ExamTime for player " + ChatColor.YELLOW + playerName + ChatColor.AQUA + " was successful!");
 		
+		return true;
+	}
+
+	private boolean commandTest(CommandSender sender, String args[])
+	{
+		Player player = (Player)sender;
+
+		if (args.length != 1)
+		{
+			player.sendMessage("Usage: /exams test <examname>");
+			return false;
+		}
+
+		String examName = args[0];
+		
+		if (!plugin.getExamManager().examExists(examName))
+		{
+			player.sendMessage(ChatColor.RED + "There is no exam called '" + examName + "'!");
+			return false;
+		}
+		
+		String currentExam = plugin.getStudentManager().getExamForStudent(player.getName());
+
+		if(currentExam==null)
+		{
+			plugin.getExamManager().handleNewExamPrerequisites(player, examName);
+			
+			return false;
+		}
+
+		if (!currentExam.equals(examName))
+		{
+			plugin.sendInfo(player, ChatColor.RED + "You are already signed up for the " + ChatColor.YELLOW + currentExam + ChatColor.RED + " exam!");
+			return false;
+		}
+		
+		if (plugin.getExamManager().isExamOpen(player.getWorld(), examName))
+		{
+			if (!plugin.getStudentManager().isDoingExam(player.getName()))
+			{
+				if (!plugin.getExamManager().generateExam(player.getName(), examName))
+				{
+					player.sendMessage(ChatColor.RED + "ERROR: Could not generate a " + ChatColor.YELLOW + examName + ChatColor.RED + "exam!");
+					return false;
+				}
+
+				plugin.sendToAll(ChatColor.AQUA + player.getName() + " started on the exam for " + ChatColor.YELLOW + examName + ChatColor.AQUA + "!");
+				plugin.sendMessage(player.getName(), "You started on the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam.");
+				plugin.sendMessage(player.getName(), "Click on the sign again to repeat the exam question.");
+				plugin.sendMessage(player.getName(), "Good luck!");
+
+				plugin.getExamManager().nextExamQuestion(player.getName());
+			}
+
+			plugin.getExamManager().doExamQuestion(player.getName());
+		}
+			
 		return true;
 	}
 
