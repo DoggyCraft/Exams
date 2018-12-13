@@ -41,3 +41,6 @@ permissions:
     exams.reset:
         description: Allows the Player to reset another players ExamTime
         default: false
+    exams.nocooldown:
+        description: Removes cooldown from the Player
+        default: false

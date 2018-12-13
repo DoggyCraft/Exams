@@ -68,9 +68,9 @@ public class StudentManager
 		save();
 	}
 
-	public boolean hasRecentExamAttempt(String believerName)
+	public boolean hasRecentExamAttempt(String playerName)
 	{
-		String lastExamString = this.studentsConfig.getString(believerName + ".LastExamTime");
+		String lastExamString = this.studentsConfig.getString(playerName + ".LastExamTime");
 
 		String pattern = "HH:mm dd-MM-yyyy";
 		DateFormat formatter = new SimpleDateFormat(pattern);
@@ -92,9 +92,9 @@ public class StudentManager
 		return diffMinutes < plugin.minExamTime;
 	}
 
-	public boolean hasOutdatedExamAttempt(String believerName)
+	public boolean hasOutdatedExamAttempt(String playerName)
 	{
-		String lastExamString = this.studentsConfig.getString(believerName + ".LastExamTime");
+		String lastExamString = this.studentsConfig.getString(playerName + ".LastExamTime");
 
 		String pattern = "HH:mm dd-MM-yyyy";
 		DateFormat formatter = new SimpleDateFormat(pattern);

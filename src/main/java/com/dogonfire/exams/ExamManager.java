@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -31,10 +33,10 @@ import net.milkbowl.vault.economy.Economy;
 public class ExamManager
 {
 	private Exams				plugin;
-	private FileConfiguration	examsConfig		= null;
-	private File				examsConfigFile	= null;
-	private Random				random			= new Random();
-	private Economy				economy			= null;
+	private FileConfiguration	examsConfig			= null;
+	private File				examsConfigFile		= null;
+	private Random				random				= new Random();
+	private Economy				economy				= null;
 
 	ExamManager(Exams p)
 	{
@@ -167,6 +169,29 @@ public class ExamManager
 
 	private void save()
 	{
+		/*plugin.logDebug("Saving all exam configs...");
+		File exams = new File(plugin.getDataFolder() + File.separator + "exams");
+		for(File exam : exams.listFiles())
+		{
+			plugin.logDebug("Is this a directory?");
+			if (exam.isDirectory()) 
+			{
+	            this.plugin.logDebug("Oops, that was a directory... skipping");
+	        } 
+			else 
+			{
+				plugin.logDebug("That wasn't a directory, trying to save it.");
+				try
+				{
+					this.getExamConfig(exam.getName()).save(this.examsConfigFile);
+				}
+				catch (Exception ex)
+				{
+					this.plugin.log("Could not save config to " + this.examsConfigFile + ": " + ex.getMessage());
+				}
+	        }
+		}*/
+		
 		if ((this.examsConfig == null) || (this.examsConfigFile == null))
 		{
 			return;
@@ -220,7 +245,7 @@ public class ExamManager
 			return false;	 		
 		}
 
-		if (plugin.getExamManager().signupForExam(player.getName(), examName))
+		if (plugin.getExamManager().signupForExam(player.getName(), examName, player))
 		{
 			plugin.sendMessage(player.getName(), ChatColor.AQUA + "Click the sign again to start this exam!");
 			plugin.sendToAll(ChatColor.AQUA + player.getName() + " signed up for the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam!");
@@ -664,7 +689,7 @@ public class ExamManager
 		return false;
 	}
 
-	public boolean signupForExam(String playerName, String examName)
+	public boolean signupForExam(String playerName, String examName, Player player)
 	{
 		double price = getExamPrice(examName);
 
@@ -679,9 +704,12 @@ public class ExamManager
 
 		if (plugin.getStudentManager().hasRecentExamAttempt(playerName))
 		{
-			plugin.sendMessage(playerName, ChatColor.RED + "You cannot take another exam so soon!");
-			plugin.sendMessage(playerName, ChatColor.RED + "Try again in " + ChatColor.YELLOW + plugin.getStudentManager().getTimeUntilCanDoExam(plugin.getServer().getPlayer(playerName).getWorld(), playerName) + ChatColor.RED + " minutes");
-			return false;
+			if (!player.hasPermission("exams.nocooldown"))
+			{
+				plugin.sendMessage(playerName, ChatColor.RED + "You cannot take another exam so soon!");
+				plugin.sendMessage(playerName, ChatColor.RED + "Try again in " + ChatColor.YELLOW + plugin.getStudentManager().getTimeUntilCanDoExam(plugin.getServer().getPlayer(playerName).getWorld(), playerName) + ChatColor.RED + " minutes");
+				return false;
+			}
 		}
 
 		String oldRank = plugin.getPermissionsManager().getGroup(playerName);
