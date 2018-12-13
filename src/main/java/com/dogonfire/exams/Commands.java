@@ -230,7 +230,7 @@ public class Commands
 				sender.sendMessage(ChatColor.AQUA + "In exam?" + ChatColor.WHITE + " - No");
 				sender.sendMessage(ChatColor.AQUA + "Last exam time:" + ChatColor.WHITE + " - " + examTime);
 				List<String> passedExams = plugin.getStudentManager().getPassedExams(playerName);
-				String passedExamsByComma = String.join(",", passedExams);
+				String passedExamsByComma = String.join(", ", passedExams);
 				if(passedExams!=null)
 				{
 					sender.sendMessage(ChatColor.AQUA + "Passed exams:" + ChatColor.WHITE + " - " + passedExamsByComma);
@@ -239,7 +239,7 @@ public class Commands
 			else
 			{
 				List<String> passedExams = plugin.getStudentManager().getPassedExams(playerName);
-				String passedExamsByComma = String.join(",", passedExams);
+				String passedExamsByComma = String.join(", ", passedExams);
 				if(passedExams!=null)
 				{
 					sender.sendMessage(ChatColor.AQUA + "In exam?" + ChatColor.WHITE + " - No");
