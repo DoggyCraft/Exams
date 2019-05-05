@@ -257,9 +257,14 @@ public class ExamManager
 		return true;		
 	}
 	
+	public boolean isWallSign(Block sign) {
+		Material block = sign.getType();
+		return ((block == Material.ACACIA_WALL_SIGN) || (block == Material.BIRCH_WALL_SIGN) || (block == Material.DARK_OAK_WALL_SIGN) || (block == Material.JUNGLE_WALL_SIGN));
+	}
+	
 	public String getExamFromSign(Block clickedBlock)
 	{
-		if (clickedBlock.getType() != Material.WALL_SIGN)
+		if (!isWallSign(clickedBlock))
 		{
 			return null;
 		}
@@ -297,7 +302,7 @@ public class ExamManager
 
 	public boolean isExamSign(Block clickedBlock)
 	{
-		if ((clickedBlock == null) || (clickedBlock.getType() != Material.WALL_SIGN))
+		if ((clickedBlock == null) || (!isWallSign(clickedBlock)))
 		{
 			return false;
 		}
@@ -313,9 +318,9 @@ public class ExamManager
 
 	public boolean isExamSign(Block clickedBlock, String[] lines)
 	{
-		if (clickedBlock.getType() != Material.WALL_SIGN)
+		if (!isWallSign(clickedBlock))
 		{
-			this.plugin.logDebug("Not a exam sign");
+			this.plugin.logDebug("Not an exam sign");
 			return false;
 		}
 

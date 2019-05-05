@@ -4,6 +4,7 @@ import java.util.Date;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 public class ExamSign
@@ -138,16 +139,18 @@ public class ExamSign
 
 	public boolean onWall()
 	{
-		return getLocation().getBlock().getType() == Material.WALL_SIGN;
+		Material block = getLocation().getBlock().getType();
+		return (block == Material.ACACIA_WALL_SIGN) || (block == Material.BIRCH_WALL_SIGN) || (block == Material.DARK_OAK_WALL_SIGN) || (block == Material.JUNGLE_WALL_SIGN);
 	}
 
 	public void destroyAgent(boolean drop)
 	{
-		getLocation().getBlock().setType(Material.AIR);
+		Block block = getLocation().getBlock();
+		block.setType(Material.AIR);
 
 		if (drop)
 		{
-			getWorldWorld().dropItem(getLocation(), new ItemStack(Material.SIGN, 1));
+			getWorldWorld().dropItem(getLocation(), new ItemStack(block.getType(), 1));
 		}
 	}
 }

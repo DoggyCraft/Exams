@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.dogonfire</groupId>
   <artifactId>exams</artifactId>
-  <version>0.3.3</version>
+  <version>0.3.4</version>
   <name>Exams</name>
   <description>Exams in Minecraft!</description>
   <url>https://github.com/DogOnFire/Exams</url>
@@ -20,7 +20,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.13.2-R0.1-SNAPSHOT</version>
+      <version>1.14-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

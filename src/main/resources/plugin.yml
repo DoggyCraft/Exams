@@ -2,7 +2,7 @@ name: Exams
 main: com.dogonfire.exams.Exams
 author: DogOnFire
 version: ${project.version}
-api-version: 1.13
+api-version: 1.14
 load: POSTWORLD
 description: Exams in Minecraft!
 softdepend: [Vault]
