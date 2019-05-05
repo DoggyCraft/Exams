@@ -1,7 +1,9 @@
 name: Exams
-main: main.java.com.dogonfire.exams.Exams
+main: com.dogonfire.exams.Exams
 author: DogOnFire
 version: ${project.version}
+api-version: 1.13
+load: POSTWORLD
 description: Exams in Minecraft!
 softdepend: [Vault]
 website: https://dev.bukkit.org/projects/exams

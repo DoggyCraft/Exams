@@ -1,4 +1,4 @@
-package main.java.com.dogonfire.exams;
+package com.dogonfire.exams;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -16,6 +14,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -692,10 +691,11 @@ public class ExamManager
 	public boolean signupForExam(String playerName, String examName, Player player)
 	{
 		double price = getExamPrice(examName);
+		OfflinePlayer offlinePlayer = (Player) player;
 
 		if (this.plugin.examPricesEnabled)
 		{
-			if (price > 0.0D && !economy.has(playerName, price))
+			if (price > 0.0D && !economy.has(offlinePlayer, price))
 			{
 				plugin.sendMessage(playerName, ChatColor.RED + "You need " + economy.format(getExamPrice(examName)) + " to take this exam");
 				return false;
@@ -724,7 +724,7 @@ public class ExamManager
 		{
 			if(price > 0.0D)
 			{
-				economy.withdrawPlayer(playerName, price);
+				economy.withdrawPlayer(offlinePlayer, price);
 				plugin.sendMessage(playerName, ChatColor.AQUA + "You paid " + ChatColor.YELLOW + economy.format(getExamPrice(examName)) + ChatColor.AQUA + " for signing up to this exam");
 			}
 		}
