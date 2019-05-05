@@ -259,7 +259,8 @@ public class ExamManager
 	
 	public boolean isWallSign(Block sign) {
 		Material block = sign.getType();
-		return ((block == Material.ACACIA_WALL_SIGN) || (block == Material.BIRCH_WALL_SIGN) || (block == Material.DARK_OAK_WALL_SIGN) || (block == Material.JUNGLE_WALL_SIGN));
+		plugin.logDebug("Material: " + block.toString());
+		return ((block == Material.ACACIA_WALL_SIGN) || (block == Material.BIRCH_WALL_SIGN) || (block == Material.OAK_WALL_SIGN) || (block == Material.DARK_OAK_WALL_SIGN) || (block == Material.JUNGLE_WALL_SIGN));
 	}
 	
 	public String getExamFromSign(Block clickedBlock)

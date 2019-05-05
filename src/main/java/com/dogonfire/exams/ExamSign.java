@@ -140,7 +140,7 @@ public class ExamSign
 	public boolean onWall()
 	{
 		Material block = getLocation().getBlock().getType();
-		return (block == Material.ACACIA_WALL_SIGN) || (block == Material.BIRCH_WALL_SIGN) || (block == Material.DARK_OAK_WALL_SIGN) || (block == Material.JUNGLE_WALL_SIGN);
+		return ((block == Material.ACACIA_WALL_SIGN) || (block == Material.BIRCH_WALL_SIGN) || (block == Material.OAK_WALL_SIGN) || (block == Material.DARK_OAK_WALL_SIGN) || (block == Material.JUNGLE_WALL_SIGN));
 	}
 
 	public void destroyAgent(boolean drop)
