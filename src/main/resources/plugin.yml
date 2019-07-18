@@ -30,7 +30,7 @@ permissions:
         default: true
     exams.place:
         description: Allows the Player to place exams
-        default: true
+        default: false
     exams.reload:
         description: Allows the Player to reload configuration for the Exams system
         default: false

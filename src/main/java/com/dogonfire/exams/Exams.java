@@ -1,6 +1,5 @@
 package com.dogonfire.exams;
 
-import java.util.logging.Logger;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,14 +43,14 @@ public class Exams extends JavaPlugin
 
 	public void log(String message)
 	{
-		Logger.getLogger("minecraft").info("[" + getDescription().getFullName() + "] " + message);
+		this.getLogger().info(message);
 	}
 
 	public void logDebug(String message)
 	{
 		if (this.debug)
 		{
-			Logger.getLogger("minecraft").info("[" + getDescription().getFullName() + "] " + message);
+			this.getLogger().info(message);
 		}
 	}
 

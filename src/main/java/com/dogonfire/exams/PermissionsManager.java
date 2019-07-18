@@ -52,12 +52,53 @@ public class PermissionsManager
 		}
 		return "";
 	}
+	
+	public String[] getGroups(String playerName)
+	{
+		if (this.plugin.examPricesEnabled) {
+			return vaultPermission.getPlayerGroups(null, plugin.getServer().getPlayer(playerName));
+		}
+		return null;
+	}
 
-	public void setGroup(String playerName, String groupName)
+	public void addGroup(String playerName, String groupName)
 	{
 		if (this.plugin.examPricesEnabled) {
 			Player player = plugin.getServer().getPlayer(playerName);
-			vaultPermission.playerAddGroup(player, groupName);
+			vaultPermission.playerAddGroup(null, player, groupName);
 		}
+	}
+	
+	public void addGroups(String playerName, String[] groupNames)
+	{
+		for (String groupName : groupNames) {
+			addGroup(playerName, groupName);
+		}
+	}
+	
+	public void removeGroup(String playerName, String groupName)
+	{
+		if (this.plugin.examPricesEnabled) {
+			Player player = plugin.getServer().getPlayer(playerName);
+			vaultPermission.playerRemoveGroup(null, player, groupName);
+		}
+	}
+	
+	public void removeGroups(String playerName, String[] groupNames)
+	{
+		if (this.plugin.examPricesEnabled) {
+			for (String groupName : groupNames) {
+				removeGroup(playerName, groupName);
+			}
+		}
+	}
+	
+	public boolean inGroup(String playerName, String groupName)
+	{
+		if (this.plugin.examPricesEnabled) {
+			Player player = plugin.getServer().getPlayer(playerName);
+			return vaultPermission.playerInGroup(player, groupName);
+		}
+		return false;
 	}
 }

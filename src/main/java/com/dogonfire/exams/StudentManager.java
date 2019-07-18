@@ -3,6 +3,7 @@ package com.dogonfire.exams;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -158,16 +159,24 @@ public class StudentManager
 
 		plugin.getStudentManager().setLastExamTime(playerName);
 	}
-
-	public void setOriginalRank(String playerName, String oldRank)
+	
+	public void setOriginalRanks(String playerName, String[] oldRanks)
 	{
-		studentsConfig.set(playerName + ".OriginalRank", oldRank);
+		List<String> ranks = Arrays.asList(oldRanks);
+		studentsConfig.set(playerName + ".OriginalRanks", ranks);
 		save();
 	}
-
-	public String getOriginalRank(String playerName)
+	
+	public List<String> getOriginalRanksList(String playerName)
 	{
-		return studentsConfig.getString(playerName + ".OriginalRank");
+		return studentsConfig.getStringList(playerName + ".OriginalRanks");
+	}
+	
+	public String[] getOriginalRanks(String playerName)
+	{
+		List<String> originalRanksList = getOriginalRanksList(playerName);
+		String[] originalRanks = originalRanksList.toArray(new String[0]);
+		return originalRanks;
 	}
 	
 	public String getLastExamTime(String playerName)
@@ -290,7 +299,7 @@ public class StudentManager
 		studentsConfig.set(studentName + ".ExamQuestionOptions", null);
 		studentsConfig.set(studentName + ".ExamCorrectOption", null);
 		studentsConfig.set(studentName + ".ExamCorrectAnswers", null);
-		studentsConfig.set(studentName + ".OriginalRank", null);
+		studentsConfig.set(studentName + ".OriginalRanks", null);
 
 		plugin.logDebug(studentName + " was removed as student");
 

@@ -180,11 +180,11 @@ public class Commands
 	
 	private boolean commandReset(CommandSender sender, String playerName)
 	{
-		String originalRank = plugin.getStudentManager().getOriginalRank(playerName);
+		String[] originalRanks = plugin.getStudentManager().getOriginalRanks(playerName);
 		
-		if(originalRank!=null)
-		{			
-			plugin.getPermissionsManager().setGroup(playerName, originalRank);	
+		if(originalRanks!=null)
+		{
+			plugin.getPermissionsManager().addGroups(playerName, originalRanks);	
 		}
 
 		plugin.getStudentManager().removeStudent(playerName);
@@ -205,10 +205,13 @@ public class Commands
 		{			
 			sender.sendMessage(ChatColor.AQUA + "In exam?" + ChatColor.WHITE + " - Yes");
 			sender.sendMessage(ChatColor.AQUA + "Exam name:" + ChatColor.WHITE + " - " + currentExam);
-			String originalRank = plugin.getStudentManager().getOriginalRank(playerName);
-			if(originalRank!=null)
+			String[] originalRanks = plugin.getStudentManager().getOriginalRanks(playerName);
+			if(originalRanks!=null)
 			{
-				sender.sendMessage(ChatColor.AQUA + "Original rank:" + ChatColor.WHITE + " - " + originalRank);
+				sender.sendMessage(ChatColor.AQUA + "Original ranks:");
+				for (String rank : originalRanks) {
+					sender.sendMessage(ChatColor.WHITE + "    - " + rank);
+				}
 			}
 			String examTime = plugin.getStudentManager().getLastExamTime(playerName);
 			if(examTime!=null)

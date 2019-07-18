@@ -35,7 +35,7 @@ public class BlockListener implements Listener
 			event.getBlock().setType(Material.AIR);
 			event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(event.getBlock().getType(), 1));
 
-			plugin.sendInfo(player, ChatColor.RED + "You cannot place exams signs");
+			plugin.sendInfo(player, ChatColor.RED + "You cannot place Exam signs");
 
 			return;
 		}
