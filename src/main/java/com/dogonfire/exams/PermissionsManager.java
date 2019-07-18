@@ -16,8 +16,10 @@ public class PermissionsManager
 	{
 		this.plugin = p;
 			
-		RegisteredServiceProvider<Permission> permissionProvider = plugin.getServer().getServicesManager().getRegistration(Permission.class);
-		vaultPermission = permissionProvider.getProvider();
+		if (p.examPricesEnabled) {
+			RegisteredServiceProvider<Permission> permissionProvider = plugin.getServer().getServicesManager().getRegistration(Permission.class);
+			vaultPermission = permissionProvider.getProvider();
+		}
 	}
 
 	public void load()
@@ -37,17 +39,25 @@ public class PermissionsManager
 
 	public boolean hasPermission(Player player, String node)
 	{
-		return vaultPermission.has(player, node);
+		if (this.plugin.examPricesEnabled) {
+			return vaultPermission.has(player, node);
+		}
+		return false;
 	}
 
 	public String getGroup(String playerName)
 	{
-		return vaultPermission.getPrimaryGroup(plugin.getServer().getPlayer(playerName));
+		if (this.plugin.examPricesEnabled) {
+			return vaultPermission.getPrimaryGroup(plugin.getServer().getPlayer(playerName));
+		}
+		return "";
 	}
 
 	public void setGroup(String playerName, String groupName)
 	{
-		Player player = plugin.getServer().getPlayer(playerName);
-		vaultPermission.playerAddGroup(player, groupName);
+		if (this.plugin.examPricesEnabled) {
+			Player player = plugin.getServer().getPlayer(playerName);
+			vaultPermission.playerAddGroup(player, groupName);
+		}
 	}
 }

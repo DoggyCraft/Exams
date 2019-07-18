@@ -1,7 +1,6 @@
 package com.dogonfire.exams;
 
 import java.util.logging.Logger;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -110,8 +109,8 @@ public class Exams extends JavaPlugin
 		loadSettings();
 		saveSettings();
 
-		this.permissionManager.load();
 		this.examManager.load();
+		this.permissionManager.load();
 		this.studentManager.load();
 
 		getServer().getPluginManager().registerEvents(new BlockListener(this), this);
