@@ -48,7 +48,7 @@ public class PermissionsManager
 	public String getGroup(String playerName)
 	{
 		if (this.plugin.examPricesEnabled) {
-			return vaultPermission.getPrimaryGroup(plugin.getServer().getPlayer(playerName));
+			return vaultPermission.getPrimaryGroup(null, plugin.getServer().getPlayer(playerName));
 		}
 		return "";
 	}

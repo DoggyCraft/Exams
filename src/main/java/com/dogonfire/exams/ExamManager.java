@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -119,8 +118,6 @@ public class ExamManager
 
 			this.examsConfig.set(testExam + ".RankName", "Wizard");
 			this.examsConfig.set(testExam + ".RequiredRank", "Citizen");
-			this.examsConfig.set(testExam + ".ListSetting", "whitelist");
-			this.examsConfig.set(testExam + ".List", Arrays.asList("FactionEmpire", "FactionResistance", "Citizen"));
 			this.examsConfig.set(testExam + ".Command", "/give $PlayerName 38 1");
 			this.examsConfig.set(testExam + ".StartTime", 600);
 			this.examsConfig.set(testExam + ".EndTime", 13000);
@@ -138,66 +135,6 @@ public class ExamManager
 
 				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
 				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "A");
-			}
-			
-			testExam = "FactionEmpire";
-
-			questions = new ArrayList<String>();
-			questions.add("Are the members of the resistance absolute scumbags?");
-			questions.add("Why did you come here?");
-			questions.add("Are you ready to give everything for the Empire?");
-
-			this.examsConfig.set(testExam + ".RankName", "FactionEmpire");
-			this.examsConfig.set(testExam + ".RequiredPermission", "exams.empireexam");
-			this.examsConfig.set(testExam + ".ListSetting", "blacklist");
-			this.examsConfig.set(testExam + ".List", Arrays.asList("FactionResistance"));
-			this.examsConfig.set(testExam + ".Command", "/give $PlayerName 38 1");
-			this.examsConfig.set(testExam + ".StartTime", 600);
-			this.examsConfig.set(testExam + ".EndTime", 13000);
-			this.examsConfig.set(testExam + ".Price", 0);
-			this.examsConfig.set(testExam + ".NumberOfQuestions", 2);
-			this.examsConfig.set(testExam + ".Questions", questions);
-
-			for (String question : questions)
-			{
-				List<String> options = new ArrayList<String>();
-				options.add("No.");
-				options.add("SALUTE THE EMPEROR!");
-				options.add("What's the Empire?");
-				options.add("What?");
-
-				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
-				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "B");
-			}
-			
-			testExam = "FactionResistance";
-
-			questions = new ArrayList<String>();
-			questions.add("Are you ready to kill lots of Empire scum?");
-			questions.add("Why did you come here?");
-			questions.add("Are you ready to give everything for the Resistance?");
-
-			this.examsConfig.set(testExam + ".RankName", "FactionResistance");
-			this.examsConfig.set(testExam + ".RequiredPermission", "exams.resistanceexam");
-			this.examsConfig.set(testExam + ".ListSetting", "blacklist");
-			this.examsConfig.set(testExam + ".List", Arrays.asList("FactionEmpire"));
-			this.examsConfig.set(testExam + ".Command", "/give $PlayerName 38 1");
-			this.examsConfig.set(testExam + ".StartTime", 600);
-			this.examsConfig.set(testExam + ".EndTime", 13000);
-			this.examsConfig.set(testExam + ".Price", 0);
-			this.examsConfig.set(testExam + ".NumberOfQuestions", 2);
-			this.examsConfig.set(testExam + ".Questions", questions);
-
-			for (String question : questions)
-			{
-				List<String> options = new ArrayList<String>();
-				options.add("No.");
-				options.add("DOWN WITH THE EMPEROR!");
-				options.add("Help. Why am I here?");
-				options.add("Excuse me, I'm with the Empire...");
-
-				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
-				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "B");
 			}
 			
 			save();
@@ -441,40 +378,6 @@ public class ExamManager
 			if(newGroup!=null)
 			{
 				plugin.getPermissionsManager().removeGroup(playerName, "student");
-
-				// Check for Blacklist or Whitelist
-				if (isExamBlacklist(examName)) {
-					String[] ranks = plugin.getStudentManager().getOriginalRanks(playerName);
-					String[] blacklistRanks = plugin.getExamManager().getExamListRoles(examName);
-					
-					// Iterate through all the ranks and see if any of them are in the blacklist
-					List<String> ranksList = new ArrayList<String>(Arrays.asList(ranks));
-					for (String rank : ranks) {
-						if (Arrays.asList(blacklistRanks).contains(rank)) {
-							ranksList.remove(rank);
-						}
-					}
-					
-					ranks = ranksList.toArray(new String[0]);
-					
-					plugin.getPermissionsManager().addGroups(playerName, ranks);
-				}
-				else if (isExamWhitelist(examName)) {
-					String[] ranks = plugin.getStudentManager().getOriginalRanks(playerName);
-					String[] whitelistRanks = plugin.getExamManager().getExamListRoles(examName);
-					
-					// Iterate through all the ranks and see if any of them are in the blacklist
-					List<String> ranksList = new ArrayList<String>();
-					for (String rank : ranks) {
-						if (Arrays.asList(whitelistRanks).contains(rank)) {
-							ranksList.add(rank);
-						}
-					}
-					
-					ranks = ranksList.toArray(new String[0]);
-					
-					plugin.getPermissionsManager().addGroups(playerName, ranks);
-				}
 				
 				plugin.getPermissionsManager().addGroup(playerName, newGroup);
 			}
@@ -483,12 +386,6 @@ public class ExamManager
 				String[] oldGroups = plugin.getStudentManager().getOriginalRanks(playerName);
 				 
 				plugin.getPermissionsManager().addGroups(playerName, oldGroups);
-				
-				/* TODO: REMOVE THIS
-				String oldGroup = plugin.getStudentManager().getOriginalRank(playerName);
-				 
-				plugin.getPermissionsManager().addGroup(playerName, oldGroup);
-				*/	
 			}
 
 			String command = getExamCommand(examName);
@@ -569,34 +466,6 @@ public class ExamManager
 		int hours = 6 + time / 1000;
 
 		return hours + ":00";
-	}
-	
-	public boolean isExamBlacklist(String examName)
-	{
-		String examListSetting = examsConfig.getString(examName + ".ListSetting");
-		
-		if (examListSetting == null) {
-			return false;
-		}
-		
-		if (examListSetting.equalsIgnoreCase("blacklist")) {
-			return true;
-		}
-		return false;
-	}
-	
-	public boolean isExamWhitelist(String examName)
-	{
-		String examListSetting = examsConfig.getString(examName + ".ListSetting");
-		
-		if (examListSetting == null) {
-			return false;
-		}
-		
-		if (examListSetting.equalsIgnoreCase("whitelist")) {
-			return true;
-		}
-		return false;
 	}
 	
 	public String[] getExamListRoles(String examName)
