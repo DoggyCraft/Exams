@@ -99,6 +99,17 @@ public class Exams extends JavaPlugin
 
 	public void onEnable()
 	{
+		if (getServer().getPluginManager().getPlugin("Vault") != null)
+		{
+			log("Vault found!");
+		}
+		else
+		{
+			log("Vault not found, Exams is disabled.");
+			onDisable();
+			examPricesEnabled = false;
+		}
+
 		this.examManager = new ExamManager(this);
 		this.studentManager = new StudentManager(this);
 		this.permissionManager = new PermissionsManager(this);
@@ -179,6 +190,7 @@ public class Exams extends JavaPlugin
 	public void onDisable()
 	{
 		//reloadSettings();
+		this.setEnabled(false);
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)

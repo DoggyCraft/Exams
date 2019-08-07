@@ -40,26 +40,18 @@ public class ExamManager
 	ExamManager(Exams p)
 	{
 		this.plugin = p;
+		
+		RegisteredServiceProvider<Economy> economyProvider = this.plugin.getServer().getServicesManager().getRegistration(Economy.class);
 
-		if (this.plugin.getServer().getPluginManager().getPlugin("Vault") != null)
+		if (economyProvider != null)
 		{
-			RegisteredServiceProvider<Economy> economyProvider = plugin.getServer().getServicesManager().getRegistration(Economy.class);
-
-			if (economyProvider != null)
-			{
-				this.economy = ((Economy) economyProvider.getProvider());
-				this.plugin.examPricesEnabled = true;
-				this.plugin.log("Vault found, exam prices enabled.");
-			}
-			else
-			{
-				this.plugin.log("Vault not found, exam prices disabled.");
-				this.plugin.examPricesEnabled = false;
-			}
+			economy = ((Economy) economyProvider.getProvider());
+			this.plugin.examPricesEnabled = true;
+			this.plugin.log("Vault economy, exam prices enabled.");
 		}
 		else
 		{
-			this.plugin.log("Vault not found, exam prices disabled.");
+			this.plugin.log("Vault economy not found, exam prices disabled.");
 			this.plugin.examPricesEnabled = false;
 		}
 	}

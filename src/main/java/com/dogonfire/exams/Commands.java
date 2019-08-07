@@ -312,7 +312,7 @@ public class Commands
 
 	private void commandAnswer(Player player, String answer)
 	{
-		if (!plugin.getStudentManager().isDoingExam(player.getName()))
+		if (!plugin.getStudentManager().isDoingExam(player.getName()) || plugin.getStudentManager().getExamForStudent(player.getName()) == null)
 		{
 			player.sendMessage(ChatColor.RED + "You are not taking any exam!");
 			return;
