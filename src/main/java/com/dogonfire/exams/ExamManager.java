@@ -1,4 +1,4 @@
-package main.java.com.dogonfire.exams;
+package com.dogonfire.exams;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +14,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -31,34 +32,26 @@ import net.milkbowl.vault.economy.Economy;
 public class ExamManager
 {
 	private Exams				plugin;
-	private FileConfiguration	examsConfig		= null;
-	private File				examsConfigFile	= null;
-	private Random				random			= new Random();
-	private Economy				economy			= null;
+	private FileConfiguration	examsConfig			= null;
+	private File				examsConfigFile		= null;
+	private Random				random				= new Random();
+	private Economy				economy				= null;
 
 	ExamManager(Exams p)
 	{
 		this.plugin = p;
+		
+		RegisteredServiceProvider<Economy> economyProvider = this.plugin.getServer().getServicesManager().getRegistration(Economy.class);
 
-		if (this.plugin.getServer().getPluginManager().getPlugin("Vault") != null)
+		if (economyProvider != null)
 		{
-			RegisteredServiceProvider<Economy> economyProvider = plugin.getServer().getServicesManager().getRegistration(Economy.class);
-
-			if (economyProvider != null)
-			{
-				this.economy = ((Economy) economyProvider.getProvider());
-				this.plugin.examPricesEnabled = true;
-				this.plugin.log("Vault found, exam prices enabled.");
-			}
-			else
-			{
-				this.plugin.log("Vault not found, exam prices disabled.");
-				this.plugin.examPricesEnabled = false;
-			}
+			economy = ((Economy) economyProvider.getProvider());
+			this.plugin.examPricesEnabled = true;
+			this.plugin.log("Vault economy, exam prices enabled.");
 		}
 		else
 		{
-			this.plugin.log("Vault not found, exam prices disabled.");
+			this.plugin.log("Vault economy not found, exam prices disabled.");
 			this.plugin.examPricesEnabled = false;
 		}
 	}
@@ -116,6 +109,7 @@ public class ExamManager
 			questions.add("How do you slay a dragon?");
 
 			this.examsConfig.set(testExam + ".RankName", "Wizard");
+			this.examsConfig.set(testExam + ".RequiredRank", "Citizen");
 			this.examsConfig.set(testExam + ".Command", "/give $PlayerName 38 1");
 			this.examsConfig.set(testExam + ".StartTime", 600);
 			this.examsConfig.set(testExam + ".EndTime", 13000);
@@ -133,9 +127,9 @@ public class ExamManager
 
 				this.examsConfig.set(testExam + ".Questions." + question + ".Options", options);
 				this.examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "A");
-			}			
+			}
 			
-			save();			
+			save();
 			
 			this.plugin.log("Couldn't load exams.yml, generated an example file");
 		}
@@ -167,6 +161,29 @@ public class ExamManager
 
 	private void save()
 	{
+		/*plugin.logDebug("Saving all exam configs...");
+		File exams = new File(plugin.getDataFolder() + File.separator + "exams");
+		for(File exam : exams.listFiles())
+		{
+			plugin.logDebug("Is this a directory?");
+			if (exam.isDirectory()) 
+			{
+	            this.plugin.logDebug("Oops, that was a directory... skipping");
+	        } 
+			else 
+			{
+				plugin.logDebug("That wasn't a directory, trying to save it.");
+				try
+				{
+					this.getExamConfig(exam.getName()).save(this.examsConfigFile);
+				}
+				catch (Exception ex)
+				{
+					this.plugin.log("Could not save config to " + this.examsConfigFile + ": " + ex.getMessage());
+				}
+	        }
+		}*/
+		
 		if ((this.examsConfig == null) || (this.examsConfigFile == null))
 		{
 			return;
@@ -204,11 +221,19 @@ public class ExamManager
 	public boolean handleNewExamPrerequisites(Player player, String examName)
 	{
 		// Check for required RANK
-		String requiredRank = plugin.getExamManager().getRequiredRankForExam(player.getName(), examName);
-		if (requiredRank!=null && !plugin.getPermissionsManager().getGroup(player.getName()).equalsIgnoreCase(requiredRank))
+		String requiredRank = plugin.getExamManager().getRequiredRankForExam(examName);
+		if (requiredRank!=null && !plugin.getPermissionsManager().inGroup(player.getName(), requiredRank))
 		{
-			plugin.sendInfo(player, ChatColor.RED + "Only players with the " + ChatColor.YELLOW + requiredRank + ChatColor.RED + " rank can take this exam!");
+			plugin.sendInfo(player, ChatColor.RED + "Only players with the " + ChatColor.YELLOW + requiredRank + ChatColor.RED + " rank, can take this exam!");
 			return false;			
+		}
+		
+		// Check for required PERMISSION
+		String requiredPermission = plugin.getExamManager().getRequiredPermissionForExam(examName);
+		if (requiredPermission!=null && !plugin.getPermissionsManager().hasPermission(player, requiredPermission))
+		{
+			plugin.sendInfo(player, ChatColor.RED + "Only players with the " + ChatColor.YELLOW + requiredPermission + ChatColor.RED + " permission, can take this exam!");
+			return false;
 		}
 
 		// Check for required EXAM
@@ -220,7 +245,8 @@ public class ExamManager
 			return false;	 		
 		}
 
-		if (plugin.getExamManager().signupForExam(player.getName(), examName))
+		// Sign the player up for the EXAM
+		if (plugin.getExamManager().signupForExam(player.getName(), examName, player))
 		{
 			plugin.sendMessage(player.getName(), ChatColor.AQUA + "Click the sign again to start this exam!");
 			plugin.sendToAll(ChatColor.AQUA + player.getName() + " signed up for the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam!");
@@ -233,9 +259,15 @@ public class ExamManager
 		return true;		
 	}
 	
+	public boolean isWallSign(Block sign) {
+		Material block = sign.getType();
+		plugin.logDebug("Material: " + block.toString());
+		return ((block == Material.ACACIA_WALL_SIGN) || (block == Material.BIRCH_WALL_SIGN) || (block == Material.OAK_WALL_SIGN) || (block == Material.DARK_OAK_WALL_SIGN) || (block == Material.JUNGLE_WALL_SIGN));
+	}
+	
 	public String getExamFromSign(Block clickedBlock)
 	{
-		if (clickedBlock.getType() != Material.WALL_SIGN)
+		if (!isWallSign(clickedBlock))
 		{
 			return null;
 		}
@@ -249,9 +281,14 @@ public class ExamManager
 		return lines[2];
 	}
 	
-	public String getRequiredRankForExam(String playerName, String examName)
+	public String getRequiredRankForExam(String examName)
 	{
 		return examsConfig.getString(examName + ".RequiredRank");
+	}
+	
+	public String getRequiredPermissionForExam(String examName)
+	{
+		return examsConfig.getString(examName + ".RequiredPermission");
 	}
 	
 	public String getUnpassedRequiredExamForExam(String playerName, String examName)
@@ -273,7 +310,7 @@ public class ExamManager
 
 	public boolean isExamSign(Block clickedBlock)
 	{
-		if ((clickedBlock == null) || (clickedBlock.getType() != Material.WALL_SIGN))
+		if ((clickedBlock == null) || (!isWallSign(clickedBlock)))
 		{
 			return false;
 		}
@@ -289,9 +326,9 @@ public class ExamManager
 
 	public boolean isExamSign(Block clickedBlock, String[] lines)
 	{
-		if (clickedBlock.getType() != Material.WALL_SIGN)
+		if (!isWallSign(clickedBlock))
 		{
-			this.plugin.logDebug("Not a exam sign");
+			this.plugin.logDebug("Not an exam sign");
 			return false;
 		}
 
@@ -332,12 +369,15 @@ public class ExamManager
 			
 			if(newGroup!=null)
 			{
-				plugin.getPermissionsManager().setGroup(playerName, newGroup);
+				plugin.getPermissionsManager().removeGroup(playerName, "student");
+				
+				plugin.getPermissionsManager().addGroup(playerName, newGroup);
 			}
 			else
 			{
-				String oldGroup = plugin.getStudentManager().getOriginalRank(playerName);
-				plugin.getPermissionsManager().setGroup(playerName, oldGroup);				
+				String[] oldGroups = plugin.getStudentManager().getOriginalRanks(playerName);
+				 
+				plugin.getPermissionsManager().addGroups(playerName, oldGroups);
 			}
 
 			String command = getExamCommand(examName);
@@ -369,13 +409,19 @@ public class ExamManager
 		}
 		else
 		{
+			/* TODO: REMOVE THIS
 			String oldGroup = plugin.getStudentManager().getOriginalRank(playerName);
+			
+			plugin.getPermissionsManager().addGroup(playerName, oldGroup);
+			*/
+
+			String[] oldGroups = plugin.getStudentManager().getOriginalRanks(playerName);
+			
+			plugin.getPermissionsManager().addGroups(playerName, oldGroups);
 
 			plugin.sendMessage(playerName, ChatColor.RED + "Sorry, you did not pass the exam...");
 			plugin.sendToAll(ChatColor.RED + playerName + " just FAILED the " + ChatColor.YELLOW + plugin.getStudentManager().getExamForStudent(playerName) + ChatColor.RED + " exam...");
 			plugin.log(playerName + " failed the " + examName + " exam with " + score + " points");
-
-			plugin.getPermissionsManager().setGroup(playerName, oldGroup);
 
 			String command = getExamFailCommand(examName);
 			
@@ -412,6 +458,14 @@ public class ExamManager
 		int hours = 6 + time / 1000;
 
 		return hours + ":00";
+	}
+	
+	public String[] getExamListRoles(String examName)
+	{
+		List<String> listRolesList = examsConfig.getStringList(examName + ".List");
+		
+		String[] listRoles = listRolesList.toArray(new String[0]);
+		return listRoles;
 	}
 
 	public int cleanStudentData()
@@ -630,11 +684,14 @@ public class ExamManager
 			this.plugin.logDebug(event.getPlayer().getName() + " placed an exam sign for an invalid exam");
 			return false;
 		}
+		
+		String examName = getExactExamName(lines[2]);
 
 		event.setLine(0, "Exam");
 		event.setLine(1, "In");
+		event.setLine(2, examName);
 
-		event.getPlayer().sendMessage(ChatColor.AQUA + "You placed a sign for the " + ChatColor.GOLD + lines[2] + ChatColor.AQUA + " exam!");
+		event.getPlayer().sendMessage(ChatColor.AQUA + "You placed a sign for the " + ChatColor.GOLD + examName + ChatColor.AQUA + " exam!");
 
 		return true;
 	}
@@ -663,14 +720,28 @@ public class ExamManager
 
 		return false;
 	}
+	
+	public String getExactExamName(String examName)
+	{
+		for (String name : this.examsConfig.getKeys(false))
+		{
+			if (examName.equalsIgnoreCase(name))
+			{
+				return name;
+			}
+		}
 
-	public boolean signupForExam(String playerName, String examName)
+		return examName;
+	}
+
+	public boolean signupForExam(String playerName, String examName, Player player)
 	{
 		double price = getExamPrice(examName);
+		OfflinePlayer offlinePlayer = (Player) player;
 
 		if (this.plugin.examPricesEnabled)
 		{
-			if (price > 0.0D && !economy.has(playerName, price))
+			if (price > 0.0D && !economy.has(offlinePlayer, price))
 			{
 				plugin.sendMessage(playerName, ChatColor.RED + "You need " + economy.format(getExamPrice(examName)) + " to take this exam");
 				return false;
@@ -679,16 +750,22 @@ public class ExamManager
 
 		if (plugin.getStudentManager().hasRecentExamAttempt(playerName))
 		{
-			plugin.sendMessage(playerName, ChatColor.RED + "You cannot take another exam so soon!");
-			plugin.sendMessage(playerName, ChatColor.RED + "Try again in " + ChatColor.YELLOW + plugin.getStudentManager().getTimeUntilCanDoExam(plugin.getServer().getPlayer(playerName).getWorld(), playerName) + ChatColor.RED + " minutes");
-			return false;
+			if (!player.hasPermission("exams.nocooldown"))
+			{
+				plugin.sendMessage(playerName, ChatColor.RED + "You cannot take another exam so soon!");
+				plugin.sendMessage(playerName, ChatColor.RED + "Try again in " + ChatColor.YELLOW + plugin.getStudentManager().getTimeUntilCanDoExam(plugin.getServer().getPlayer(playerName).getWorld(), playerName) + ChatColor.RED + " minutes");
+				return false;
+			}
 		}
 
-		String oldRank = plugin.getPermissionsManager().getGroup(playerName);
+		
+		String[] oldRanks = plugin.getPermissionsManager().getGroups(playerName);
+		
+		plugin.getStudentManager().setOriginalRanks(playerName, oldRanks);
+		
+		plugin.getPermissionsManager().removeGroups(playerName, oldRanks);
 
-		plugin.getStudentManager().setOriginalRank(playerName, oldRank);
-
-		plugin.getPermissionsManager().setGroup(playerName, "student");
+		plugin.getPermissionsManager().addGroup(playerName, "student");
 
 		plugin.getStudentManager().signupForExam(playerName, examName);
 
@@ -696,7 +773,7 @@ public class ExamManager
 		{
 			if(price > 0.0D)
 			{
-				economy.withdrawPlayer(playerName, price);
+				economy.withdrawPlayer(offlinePlayer, price);
 				plugin.sendMessage(playerName, ChatColor.AQUA + "You paid " + ChatColor.YELLOW + economy.format(getExamPrice(examName)) + ChatColor.AQUA + " for signing up to this exam");
 			}
 		}

@@ -1,4 +1,4 @@
-package main.java.com.dogonfire.exams;
+package com.dogonfire.exams;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -16,8 +16,10 @@ public class PermissionsManager
 	{
 		this.plugin = p;
 			
-		RegisteredServiceProvider<Permission> permissionProvider = plugin.getServer().getServicesManager().getRegistration(Permission.class);
-		vaultPermission = permissionProvider.getProvider();
+		if (p.examPricesEnabled) {
+			RegisteredServiceProvider<Permission> permissionProvider = plugin.getServer().getServicesManager().getRegistration(Permission.class);
+			vaultPermission = permissionProvider.getProvider();
+		}
 	}
 
 	public void load()
@@ -37,17 +39,66 @@ public class PermissionsManager
 
 	public boolean hasPermission(Player player, String node)
 	{
-		return vaultPermission.has(player, node);
+		if (this.plugin.examPricesEnabled) {
+			return vaultPermission.has(player, node);
+		}
+		return false;
 	}
 
 	public String getGroup(String playerName)
 	{
-		return vaultPermission.getPrimaryGroup(plugin.getServer().getPlayer(playerName));
+		if (this.plugin.examPricesEnabled) {
+			return vaultPermission.getPrimaryGroup(null, plugin.getServer().getPlayer(playerName));
+		}
+		return "";
+	}
+	
+	public String[] getGroups(String playerName)
+	{
+		if (this.plugin.examPricesEnabled) {
+			return vaultPermission.getPlayerGroups(null, plugin.getServer().getPlayer(playerName));
+		}
+		return null;
 	}
 
-	public void setGroup(String playerName, String groupName)
+	public void addGroup(String playerName, String groupName)
 	{
-		Player player = plugin.getServer().getPlayer(playerName);
-		vaultPermission.playerAddGroup(player, groupName);
+		if (this.plugin.examPricesEnabled) {
+			Player player = plugin.getServer().getPlayer(playerName);
+			vaultPermission.playerAddGroup(null, player, groupName);
+		}
+	}
+	
+	public void addGroups(String playerName, String[] groupNames)
+	{
+		for (String groupName : groupNames) {
+			addGroup(playerName, groupName);
+		}
+	}
+	
+	public void removeGroup(String playerName, String groupName)
+	{
+		if (this.plugin.examPricesEnabled) {
+			Player player = plugin.getServer().getPlayer(playerName);
+			vaultPermission.playerRemoveGroup(null, player, groupName);
+		}
+	}
+	
+	public void removeGroups(String playerName, String[] groupNames)
+	{
+		if (this.plugin.examPricesEnabled) {
+			for (String groupName : groupNames) {
+				removeGroup(playerName, groupName);
+			}
+		}
+	}
+	
+	public boolean inGroup(String playerName, String groupName)
+	{
+		if (this.plugin.examPricesEnabled) {
+			Player player = plugin.getServer().getPlayer(playerName);
+			return vaultPermission.playerInGroup(player, groupName);
+		}
+		return false;
 	}
 }
