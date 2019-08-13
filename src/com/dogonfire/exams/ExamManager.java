@@ -359,8 +359,6 @@ public class ExamManager
 		plugin.sendMessage(playerName, ChatColor.AQUA + " Exam score:  " + ChatColor.YELLOW + score + ChatColor.AQUA + " points");
 		plugin.sendMessage(playerName, ChatColor.AQUA + " Points needed: " + ChatColor.YELLOW + plugin.requiredExamScore + ChatColor.AQUA + " points");
 
-		//Player player = plugin.getServer().getPlayer(playerName);
-
 		plugin.getStudentManager().setLastExamTime(playerName);
 		
 		if (score >= plugin.requiredExamScore)
