@@ -12,7 +12,7 @@ deploy:
 sudo: false
 addons:
   sonarcloud:
-    organization: "doggycraftdk"
+    organization: "dogonfire"
     token:
       secure: $SONAR_TOKEN
 
