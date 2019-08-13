@@ -2,6 +2,7 @@
 /bukkit
 /lib
 /jar
+dependency-reduced-pom.xml
 
 # Eclipse Core
 /bin

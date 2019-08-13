@@ -138,7 +138,7 @@ public class ExamSign
 
 	public boolean onWall()
 	{
-		return getLocation().getBlock().getType() == Material.WALL_SIGN;
+		return getLocation().getBlock().getType() == Material.OAK_WALL_SIGN;
 	}
 
 	public void destroyAgent(boolean drop)
@@ -147,7 +147,7 @@ public class ExamSign
 
 		if (drop)
 		{
-			getWorldWorld().dropItem(getLocation(), new ItemStack(Material.SIGN, 1));
+			getWorldWorld().dropItem(getLocation(), new ItemStack(Material.OAK_SIGN, 1));
 		}
 	}
 }
