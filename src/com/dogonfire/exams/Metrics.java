@@ -261,7 +261,7 @@ public class Metrics {
                         Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
                     }
                 }
-            }, 0, PING_INTERVAL * 1200);
+            }, 0, PING_INTERVAL * 1200L);
 
             return true;
         }
