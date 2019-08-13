@@ -10,3 +10,11 @@ deploy:
   on:
     tags: true
 sudo: false
+addons:
+  sonarcloud:
+    organization: "doggycraftdk"
+    token:
+      secure: $SONAR_TOKEN
+
+script:
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=DoggyCraftDK_SeriousBusiness
