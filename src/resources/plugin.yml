@@ -1,11 +1,12 @@
 name: Exams
-main: main.java.com.dogonfire.exams.Exams
+main: com.dogonfire.exams.Exams
 author: DogOnFire
 version: ${project.version}
 api-version: 1.14
-description: Exams in Minecraft!
-softdepend: [Vault]
 website: https://dev.bukkit.org/projects/exams
+load: POSTWORLD
+description: Exams in Minecraft!
+depend: [Vault]
 commands:
   exams:
     description: Controls the Exams system
@@ -29,7 +30,7 @@ permissions:
         default: true
     exams.place:
         description: Allows the Player to place exams
-        default: true
+        default: false
     exams.reload:
         description: Allows the Player to reload configuration for the Exams system
         default: false
@@ -41,4 +42,7 @@ permissions:
         default: true
     exams.reset:
         description: Allows the Player to reset another players ExamTime
+        default: false
+    exams.nocooldown:
+        description: Removes cooldown from the Player
         default: false

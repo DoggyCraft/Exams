@@ -1,6 +1,4 @@
-package main.java.com.dogonfire.exams;
-
-import java.util.logging.Logger;
+package com.dogonfire.exams;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -45,14 +43,14 @@ public class Exams extends JavaPlugin
 
 	public void log(String message)
 	{
-		Logger.getLogger("minecraft").info("[" + getDescription().getFullName() + "] " + message);
+		this.getLogger().info(message);
 	}
 
 	public void logDebug(String message)
 	{
 		if (this.debug)
 		{
-			Logger.getLogger("minecraft").info("[" + getDescription().getFullName() + "] " + message);
+			this.getLogger().info(message);
 		}
 	}
 
@@ -101,6 +99,17 @@ public class Exams extends JavaPlugin
 
 	public void onEnable()
 	{
+		if (getServer().getPluginManager().getPlugin("Vault") != null)
+		{
+			log("Vault found!");
+		}
+		else
+		{
+			log("Vault not found, Exams is disabled.");
+			onDisable();
+			examPricesEnabled = false;
+		}
+
 		this.examManager = new ExamManager(this);
 		this.studentManager = new StudentManager(this);
 		this.permissionManager = new PermissionsManager(this);
@@ -110,8 +119,8 @@ public class Exams extends JavaPlugin
 		loadSettings();
 		saveSettings();
 
-		this.permissionManager.load();
 		this.examManager.load();
+		this.permissionManager.load();
 		this.studentManager.load();
 
 		getServer().getPluginManager().registerEvents(new BlockListener(this), this);
@@ -181,6 +190,7 @@ public class Exams extends JavaPlugin
 	public void onDisable()
 	{
 		//reloadSettings();
+		this.setEnabled(false);
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)

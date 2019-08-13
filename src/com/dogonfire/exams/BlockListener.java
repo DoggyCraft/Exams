@@ -1,4 +1,4 @@
-package main.java.com.dogonfire.exams;
+package com.dogonfire.exams;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -33,9 +33,9 @@ public class BlockListener implements Listener
 		{
 			event.setCancelled(true);
 			event.getBlock().setType(Material.AIR);
-			event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.OAK_SIGN, 1));
+			event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(event.getBlock().getType(), 1));
 
-			plugin.sendInfo(player, ChatColor.RED + "You cannot place exams signs");
+			plugin.sendInfo(player, ChatColor.RED + "You cannot place Exam signs");
 
 			return;
 		}
@@ -44,7 +44,7 @@ public class BlockListener implements Listener
 		{
 			event.setCancelled(true);
 			event.getBlock().setType(Material.AIR);
-			event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.OAK_SIGN, 1));
+			event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(event.getBlock().getType(), 1));
 		}
 	}
 
