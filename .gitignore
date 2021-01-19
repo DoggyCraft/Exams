@@ -12,5 +12,9 @@ dependency-reduced-pom.xml
 .project
 /.settings/
 
+# Specific to IDEA
+.idea/
+exams.iml
+
 # Maven build
 /target/

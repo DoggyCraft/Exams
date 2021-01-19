@@ -2,6 +2,7 @@ package com.dogonfire.exams;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +20,42 @@ public class BlockListener implements Listener
 		this.plugin = p;
 	}
 
+    private void destroySign(Block signBlock)
+    {
+        Material signType = signBlock.getType();
+        signBlock.setType(Material.AIR);
+
+        // Drop it
+        switch (signType) {
+            case OAK_WALL_SIGN:
+                signBlock.getWorld().dropItem(signBlock.getLocation(), new ItemStack(Material.OAK_SIGN, 1));
+                break;
+            case SPRUCE_WALL_SIGN:
+                signBlock.getWorld().dropItem(signBlock.getLocation(), new ItemStack(Material.SPRUCE_SIGN, 1));
+                break;
+            case BIRCH_WALL_SIGN:
+                signBlock.getWorld().dropItem(signBlock.getLocation(), new ItemStack(Material.BIRCH_SIGN, 1));
+                break;
+            case JUNGLE_WALL_SIGN:
+                signBlock.getWorld().dropItem(signBlock.getLocation(), new ItemStack(Material.JUNGLE_SIGN, 1));
+                break;
+            case ACACIA_WALL_SIGN:
+                signBlock.getWorld().dropItem(signBlock.getLocation(), new ItemStack(Material.ACACIA_SIGN, 1));
+                break;
+            case DARK_OAK_WALL_SIGN:
+                signBlock.getWorld().dropItem(signBlock.getLocation(), new ItemStack(Material.DARK_OAK_SIGN, 1));
+                break;
+            case CRIMSON_WALL_SIGN:
+                signBlock.getWorld().dropItem(signBlock.getLocation(), new ItemStack(Material.CRIMSON_SIGN, 1));
+                break;
+            case WARPED_WALL_SIGN:
+                signBlock.getWorld().dropItem(signBlock.getLocation(), new ItemStack(Material.WARPED_SIGN, 1));
+                break;
+            default:
+                break;
+        }
+    }
+
 	@EventHandler
 	public void onSignChange(SignChangeEvent event)
 	{
@@ -32,8 +69,7 @@ public class BlockListener implements Listener
 		if (!player.isOp() && !plugin.getPermissionsManager().hasPermission(player, "exams.place"))
 		{
 			event.setCancelled(true);
-			event.getBlock().setType(Material.AIR);
-			event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(event.getBlock().getType(), 1));
+            destroySign(event.getBlock());
 
 			plugin.sendInfo(player, ChatColor.RED + "You cannot place Exam signs");
 
@@ -43,8 +79,7 @@ public class BlockListener implements Listener
 		if (!plugin.getExamManager().handleNewExamSign(event))
 		{
 			event.setCancelled(true);
-			event.getBlock().setType(Material.AIR);
-			event.getBlock().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(event.getBlock().getType(), 1));
+            destroySign(event.getBlock());
 		}
 	}
 

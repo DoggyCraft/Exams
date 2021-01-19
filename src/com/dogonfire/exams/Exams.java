@@ -7,11 +7,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.List;
+
 public class Exams extends JavaPlugin
 {
 	private ExamManager			examManager			= null;
 	private StudentManager		studentManager		= null;
-	private PermissionsManager	permissionManager	= null;
+	private static PermissionsManager	permissionManager	= null;
 
 	private FileConfiguration	config				= null;
 	private Commands			commands			= null;
@@ -36,9 +38,9 @@ public class Exams extends JavaPlugin
 		return this.studentManager;
 	}
 
-	public PermissionsManager getPermissionsManager()
+	public static PermissionsManager getPermissionsManager()
 	{
-		return this.permissionManager;
+		return permissionManager;
 	}
 
 	public void log(String message)
@@ -193,8 +195,15 @@ public class Exams extends JavaPlugin
 		this.setEnabled(false);
 	}
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		return commands.onCommand(sender, cmd, label, args);
 	}
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args)
+    {
+        return this.commands.onTabComplete(sender, cmd, alias, args);
+    }
 }

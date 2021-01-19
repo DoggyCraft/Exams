@@ -1,12 +1,16 @@
 package com.dogonfire.exams;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 //import java.util.Comparator;
+import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 public class Commands
 {
@@ -394,5 +398,89 @@ public class Commands
 
 	private void commandExamList(CommandSender sender)
 	{
+	}
+
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String alias, String[] args)
+	{
+		Validate.notNull(sender, "Sender cannot be null");
+		Validate.notNull(args, "Arguments cannot be null");
+		Validate.notNull(alias, "Alias cannot be null");
+
+		List<String> result = new ArrayList<String>();
+
+		Player player = null;
+		if (sender instanceof Player)
+		{
+			player = (Player) sender;
+		}
+
+		if (cmd.getName().equalsIgnoreCase("exams") || cmd.getName().equalsIgnoreCase("exam"))
+		{
+			if (args.length == 1)
+			{
+				List<String> arg1 = new ArrayList<String>();
+				arg1.add("help");
+				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.reload"))
+				{
+					arg1.add("reload");
+				}
+				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.clean"))
+				{
+					arg1.add("clean");
+				}
+				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.list"))
+				{
+					arg1.add("list");
+				}
+				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.reset"))
+				{
+					arg1.add("reset");
+				}
+				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.studentinfo"))
+				{
+					arg1.add("studentinfo");
+				}
+				if (player != null)
+				{
+					if (plugin.getStudentManager().isDoingExam(player.getName()) && plugin.getStudentManager().getExamForStudent(player.getName()) != null)
+					{
+						arg1.add("a");
+						arg1.add("b");
+						arg1.add("c");
+						arg1.add("d");
+					}
+					if (player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.test"))
+					{
+						arg1.add("test");
+					}
+				}
+				Iterable<String> FIRST_ARGUMENTS = arg1;
+				StringUtil.copyPartialMatches(args[0], FIRST_ARGUMENTS, result);
+			}
+			else if (args.length == 2)
+			{
+				if (args[0].equalsIgnoreCase("reset") && (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.reset")))
+				{
+					return null;
+				}
+				else if (args[0].equalsIgnoreCase("studentinfo") && (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.studentinfo")))
+				{
+					return null;
+				}
+				else
+				{
+//					List<String> arg2 = new ArrayList<String>();
+//
+//					arg2.add("2500");
+//					arg2.add("5000");
+//
+//					Iterable<String> SECOND_ARGUMENTS = arg2;
+//					StringUtil.copyPartialMatches(args[1], SECOND_ARGUMENTS, result);
+				}
+			}
+		}
+
+		Collections.sort(result);
+		return result;
 	}
 }

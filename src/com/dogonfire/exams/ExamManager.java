@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -136,7 +137,7 @@ public class ExamManager
 
 		try
 		{
-			examsConfig.load(new InputStreamReader(new FileInputStream(examsConfigFile), Charset.forName("UTF-8")));
+			examsConfig.load(new InputStreamReader(new FileInputStream(examsConfigFile), StandardCharsets.UTF_8));
 		}
 		catch (FileNotFoundException e)
 		{
@@ -262,7 +263,19 @@ public class ExamManager
 	public boolean isWallSign(Block sign) {
 		Material block = sign.getType();
 		plugin.logDebug("Material: " + block.toString());
-		return ((block == Material.ACACIA_WALL_SIGN) || (block == Material.BIRCH_WALL_SIGN) || (block == Material.OAK_WALL_SIGN) || (block == Material.DARK_OAK_WALL_SIGN) || (block == Material.JUNGLE_WALL_SIGN));
+        switch (block) {
+            case OAK_WALL_SIGN:
+            case SPRUCE_WALL_SIGN:
+            case BIRCH_WALL_SIGN:
+            case JUNGLE_WALL_SIGN:
+            case ACACIA_WALL_SIGN:
+            case DARK_OAK_WALL_SIGN:
+            case CRIMSON_WALL_SIGN:
+            case WARPED_WALL_SIGN:
+                return true;
+            default:
+                return false;
+        }
 	}
 	
 	public String getExamFromSign(Block clickedBlock)
@@ -278,7 +291,7 @@ public class ExamManager
 
 		String[] lines = sign.getLines();
 
-		return lines[2];
+		return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', lines[2]));
 	}
 	
 	public String getRequiredRankForExam(String examName)
@@ -321,7 +334,7 @@ public class ExamManager
 
 		String[] lines = sign.getLines();
 
-		return lines[0].equalsIgnoreCase("Exam");
+		return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', lines[0])).equalsIgnoreCase("Exam");
 	}
 
 	public boolean isExamSign(Block clickedBlock, String[] lines)
@@ -334,9 +347,9 @@ public class ExamManager
 
 		clickedBlock.getState();
 
-		if (!lines[0].equalsIgnoreCase("Exam"))
+		if (!ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', lines[0])).equalsIgnoreCase("Exam"))
 		{
-			this.plugin.logDebug("Not written exam on first line: " + lines[0]);
+			this.plugin.logDebug("Not written exam on first line: " + ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', lines[0])));
 			return false;
 		}
 
@@ -676,18 +689,26 @@ public class ExamManager
 	{
 		String[] lines = event.getLines();
 
-		if (!examExists(lines[2]))
+		if (!examExists(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', lines[2]))))
 		{
-			event.getPlayer().sendMessage(ChatColor.RED + "There is no exam called '" + lines[2] + "'");
+			event.getPlayer().sendMessage(ChatColor.RED + "There is no exam called '" + ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', lines[2])) + "'");
 			this.plugin.logDebug(event.getPlayer().getName() + " placed an exam sign for an invalid exam");
 			return false;
 		}
-		
-		String examName = getExactExamName(lines[2]);
 
-		event.setLine(0, "Exam");
-		event.setLine(1, "In");
-		event.setLine(2, examName);
+		// Getting color codes from the original sign
+        List<String> signLineColors = new ArrayList<String>();
+		for (String signLine : lines)
+        {
+            signLineColors.add(signLine.replace(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', signLine)), ""));
+        }
+
+        // Setting the lines
+		String examName = getExactExamName(ChatColor.stripColor(lines[2]));
+
+		event.setLine(0, signLineColors.get(0)+"Exam");
+		event.setLine(1, signLineColors.get(1)+"In");
+		event.setLine(2, signLineColors.get(2)+examName);
 
 		event.getPlayer().sendMessage(ChatColor.AQUA + "You placed a sign for the " + ChatColor.GOLD + examName + ChatColor.AQUA + " exam!");
 
