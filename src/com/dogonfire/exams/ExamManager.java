@@ -27,6 +27,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
+import org.bukkit.entity.Player;
+import org.bukkit.NamespacedKey;
 
 import net.milkbowl.vault.economy.Economy;
 
@@ -417,6 +421,21 @@ public class ExamManager
 
 			plugin.sendMessage(playerName, ChatColor.GREEN + "Congratulations, you passed the exam!");
 			plugin.sendToAll(ChatColor.GREEN + playerName + " just PASSED the " + ChatColor.YELLOW + plugin.getStudentManager().getExamForStudent(playerName) + ChatColor.GREEN + " exam!");
+			
+			// giving player an advancement for passing an exam if set to true
+			if (plugin.grantAdvancement) {
+				Advancement a = Bukkit.getAdvancement(NamespacedKey.fromString(plugin.examAdvacementName));
+				if(a != null){
+					Player player = Bukkit.getServer().getPlayer(playerName);
+					AdvancementProgress progress = player.getAdvancementProgress(a);
+					if(progress.isDone() == false) {
+						player.getAdvancementProgress(a).awardCriteria("Student");
+		        	}
+		        }else{
+		        	plugin.logDebug("Failed to find Advancement");
+		        }
+			}
+			
 		}
 		else
 		{

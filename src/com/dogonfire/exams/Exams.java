@@ -20,9 +20,11 @@ public class Exams extends JavaPlugin
 
 	public boolean				debug				= false;
 	public boolean				examPricesEnabled	= true;
+	public boolean				grantAdvancement	= false;
 
 	public String				serverName			= "Your Server";
 	public String				languageFilename	= "english.yml";
+	public String				examAdvacementName	= "doggycraft:doggycraft/student";
 
 	public int					minExamTime			= 60;
 	public int 					autoCleanTime		= 8*60;
@@ -86,6 +88,8 @@ public class Exams extends JavaPlugin
 		serverName = config.getString("ServerName", "Your Server");
 		minExamTime = config.getInt("MinExamTime", 60);
 		requiredExamScore = config.getInt("RequiredExamScore", 80);
+		examAdvacementName = config.getString("AdvancementName", "doggycraft:doggycraft/student");
+		grantAdvancement = config.getBoolean("GrantAdvancement", false);
 		debug = config.getBoolean("Debug", false);
 	}
 
@@ -94,6 +98,8 @@ public class Exams extends JavaPlugin
 		config.set("ServerName", serverName);
 		config.set("MinExamTime", minExamTime);
 		config.set("RequiredExamScore", requiredExamScore);
+		config.set("AdvancementName", examAdvacementName);
+		config.set("GrantAdvancement", grantAdvancement);
 		config.set("Debug", debug);
 
 		saveConfig();
