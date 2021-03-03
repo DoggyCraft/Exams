@@ -22,7 +22,7 @@ public class PermissionsManager
 			{
 				vaultPermission = ((Permission) permissionProvider.getProvider());
 				Exams.instance().examRanksEnabled = true;
-				Exams.log("Permission provider, exam ranks enabled.");
+				Exams.log("Permission provider found, exam ranks enabled.");
 			}
 			else
 			{
@@ -41,62 +41,16 @@ public class PermissionsManager
 			return player.hasPermission(node);
 		}
 	}
-
-	public String getGroup(String playerName)
-	{
-		if (Exams.instance().examPricesEnabled) {
-			return vaultPermission.getPrimaryGroup(null, Bukkit.getServer().getPlayer(playerName));
-		}
-		return "";
-	}
-	
-	public static String[] getGroups(String playerName)
-	{
-		if (Exams.instance().examPricesEnabled) {
-			return vaultPermission.getPlayerGroups(null, Bukkit.getServer().getPlayer(playerName));
-		}
-		return null;
-	}
-
-	public static void addGroup(String playerName, String groupName)
-	{
-		if (Exams.instance().examPricesEnabled) {
-			Player player = Bukkit.getServer().getPlayer(playerName);
-			vaultPermission.playerAddGroup(null, player, groupName);
-		}
-	}
-	
-	public static void addGroups(String playerName, String[] groupNames)
-	{
-		for (String groupName : groupNames) {
-			addGroup(playerName, groupName);
-		}
-	}
-	
-	public static void removeGroup(String playerName, String groupName)
-	{
-		if (Exams.instance().examPricesEnabled) {
-			Player player = Bukkit.getServer().getPlayer(playerName);
-			vaultPermission.playerRemoveGroup(null, player, groupName);
-		}
-	}
-	
-	public static void removeGroups(String playerName, String[] groupNames)
-	{
-		if (Exams.instance().examPricesEnabled) {
-			for (String groupName : groupNames) {
-				removeGroup(playerName, groupName);
-			}
-		}
-	}
 	
 	public static boolean inGroup(String playerName, String groupName)
 	{
-		if (Exams.instance().examPricesEnabled) {
+		if (Exams.instance().examRanksEnabled) {
 			Player player = Bukkit.getServer().getPlayer(playerName);
 			assert player != null;
 			return vaultPermission.playerInGroup(player, groupName);
 		}
-		return false;
+		// If Vault can't find a permission provider, just return true.
+		// We already warned, so...
+		return true;
 	}
 }

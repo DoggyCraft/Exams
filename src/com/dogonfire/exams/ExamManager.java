@@ -47,7 +47,7 @@ public class ExamManager
 		{
 			economy = ((Economy) economyProvider.getProvider());
 			Exams.instance().examPricesEnabled = true;
-			Exams.log("Vault economy, exam prices enabled.");
+			Exams.log("Vault economy found, exam prices enabled.");
 		}
 		else
 		{
@@ -79,7 +79,7 @@ public class ExamManager
 			questions.add("Is this a RPG server?");
 			questions.add("Are you allowed to insult people?");
 
-			examsConfig.set(testExam + ".RankName", "Citizen");
+			examsConfig.set(testExam + ".Command", "/lp user $PlayerName group add Citizen");
 			examsConfig.set(testExam + ".StartTime", 600);
 			examsConfig.set(testExam + ".EndTime", 13000);
 			examsConfig.set(testExam + ".Price", 100);
@@ -108,9 +108,12 @@ public class ExamManager
 			questions.add("In which world are wizards enabled?");
 			questions.add("How do you slay a dragon?");
 
-			examsConfig.set(testExam + ".RankName", "Wizard");
 			examsConfig.set(testExam + ".RequiredRank", "Citizen");
-			examsConfig.set(testExam + ".Command", "/give $PlayerName 38 1");
+			List<String> commands = new ArrayList<String>();
+			commands.add("/give $PlayerName minecraft:poppy 1");
+			commands.add("/lp user $PlayerName group add Wizard");
+			commands.add("/lp user $PlayerName group remove Citizen");
+			examsConfig.set(testExam + ".Commands", commands);
 			examsConfig.set(testExam + ".StartTime", 600);
 			examsConfig.set(testExam + ".EndTime", 13000);
 			examsConfig.set(testExam + ".Price", 100);
@@ -153,9 +156,18 @@ public class ExamManager
 
 		//examsConfig = YamlConfiguration.loadConfiguration(examsConfigFile);
 
-		if (examsConfig.getKeys(false).size() > 0)
+		Set<String> exams = examsConfig.getKeys(false);
+		if (exams.size() > 0)
 		{
-			Exams.log("Loaded " + examsConfig.getKeys(false).size() + " exams.");
+			Exams.log("Loaded " + exams.size() + " exams.");
+
+			// Compatibility checks
+			for (String examName : exams) {
+				if (examsConfig.getString(examName + ".RankName") != null) {
+					Exams.log("[INFO] It seems like you have exams, where there is still the 'RankName' property. Please move said rank name into command(s), using the group commands from your Permission Provider, as Exams doesn't support giving out ranks anymore.");
+					break;
+				}
+			}
 		}
 	}
 
@@ -259,7 +271,7 @@ public class ExamManager
 		return true;		
 	}
 	
-	public boolean isWallSign(Block sign) {
+	public static boolean isWallSign(Block sign) {
 		Material block = sign.getType();
 		Exams.logDebug("Material: " + block.toString());
         switch (block) {
@@ -277,7 +289,7 @@ public class ExamManager
         }
 	}
 	
-	public String getExamFromSign(Block clickedBlock)
+	public static String getExamFromSign(Block clickedBlock)
 	{
 		if (!isWallSign(clickedBlock))
 		{
@@ -320,7 +332,7 @@ public class ExamManager
 		return requiredExamName;
 	}
 
-	public boolean isExamSign(Block clickedBlock)
+	public static boolean isExamSign(Block clickedBlock)
 	{
 		if ((clickedBlock == null) || (!isWallSign(clickedBlock)))
 		{
@@ -336,7 +348,7 @@ public class ExamManager
 		return ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', lines[0])).equalsIgnoreCase("Exam");
 	}
 
-	public boolean isExamSign(Block clickedBlock, String[] lines)
+	public static boolean isExamSign(Block clickedBlock, String[] lines)
 	{
 		if (!isWallSign(clickedBlock))
 		{
@@ -375,24 +387,9 @@ public class ExamManager
 		
 		if (score >= Exams.instance().requiredExamScore)
 		{
-			String newGroup = getExamRank(examName);
-			
-			if(newGroup!=null)
-			{
-				PermissionsManager.removeGroup(playerName, "student");
-				
-				PermissionsManager.addGroup(playerName, newGroup);
-			}
-			else
-			{
-				String[] oldGroups = StudentManager.getOriginalRanks(playerName);
-				 
-				PermissionsManager.addGroups(playerName, oldGroups);
-			}
-
 			String command = getExamCommand(examName);
 			
-			if(command!=null)
+			if(command != null)
 			{
 				Exams.logDebug("Reading single command");
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replace("$PlayerName", playerName));
@@ -402,15 +399,12 @@ public class ExamManager
 				Exams.logDebug("Reading multiple commands");
 
 				List<String> commands = getExamCommands(examName);
-			
-				if(commands!=null)
+
+				for(String c : commands)
 				{
-					for(String c : commands)
-					{
-						Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), c.replace("$PlayerName", playerName)); 
-					}
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), c.replace("$PlayerName", playerName));
 				}
-			}			
+			}
 			
 			StudentManager.setPassedExam(playerName, examName);
 
@@ -419,16 +413,6 @@ public class ExamManager
 		}
 		else
 		{
-			/* TODO: REMOVE THIS
-			String oldGroup = StudentManager.getOriginalRank(playerName);
-			
-			PermissionsManager.addGroup(playerName, oldGroup);
-			*/
-
-			String[] oldGroups = StudentManager.getOriginalRanks(playerName);
-			
-			PermissionsManager.addGroups(playerName, oldGroups);
-
 			Exams.sendMessage(playerName, ChatColor.RED + "Sorry, you did not pass the exam...");
 			Exams.sendToAll(ChatColor.RED + playerName + " just FAILED the " + ChatColor.YELLOW + StudentManager.getExamForStudent(playerName) + ChatColor.RED + " exam...");
 			Exams.log(playerName + " failed the " + examName + " exam with " + score + " points");
@@ -461,21 +445,13 @@ public class ExamManager
 		return number;
 	}
 
-	public String getExamStartTime(String examName)
+	public static String getExamStartTime(String examName)
 	{
 		int time = examsConfig.getInt(examName + ".StartTime") % 24000;
 
 		int hours = 6 + time / 1000;
 
 		return hours + ":00";
-	}
-	
-	public String[] getExamListRoles(String examName)
-	{
-		List<String> listRolesList = examsConfig.getStringList(examName + ".List");
-		
-		String[] listRoles = listRolesList.toArray(new String[0]);
-		return listRoles;
 	}
 
 	public static int cleanStudentData()
@@ -492,11 +468,6 @@ public class ExamManager
 			}
 		}
 		return n;
-	}
-
-	public static String getExamRank(String examName)
-	{
-		return examsConfig.getString(examName + ".RankName");
 	}
 
 	public static String getExamCommand(String examName)
@@ -557,6 +528,7 @@ public class ExamManager
 	public static String getExamQuestionText(String examName, int examQuestionIndex)
 	{
 		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
+		assert configSection != null;
 		Set<String> questions = configSection.getKeys(false);
 
 		if(examQuestionIndex >= questions.size())
@@ -571,6 +543,7 @@ public class ExamManager
 	public static String getExamQuestionCorrectOptionText(String examName, int examQuestionIndex)
 	{
 		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
+		assert configSection != null;
 		Set<String> questions = configSection.getKeys(false);
 
 		if(examQuestionIndex >= questions.size())
@@ -587,6 +560,7 @@ public class ExamManager
 	public static List<String> getExamQuestionOptionText(String examName, int examQuestionIndex)
 	{
 		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
+		assert configSection != null;
 		Set<String> questions = configSection.getKeys(false);
 
 		if(examQuestionIndex >= questions.size())
@@ -603,6 +577,7 @@ public class ExamManager
 	public static boolean generateExam(String playerName, String examName)
 	{
 		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
+		assert configSection != null;
 		Set<String> questionKeys = configSection.getKeys(false);
 
 		if (questionKeys.size() == 0)
@@ -684,7 +659,7 @@ public class ExamManager
 		Exams.sendMessage(playerName, ChatColor.AQUA + "Type " + ChatColor.WHITE + "/exams a, /exams b, /exams c or /exams d" + ChatColor.AQUA + " to answer.");
 	}
 
-	public boolean handleNewExamSign(SignChangeEvent event)
+	public static boolean handleNewExamSign(SignChangeEvent event)
 	{
 		String[] lines = event.getLines();
 
@@ -732,7 +707,7 @@ public class ExamManager
 		return false;
 	}
 	
-	public String getExactExamName(String examName)
+	public static String getExactExamName(String examName)
 	{
 		for (String name : examsConfig.getKeys(false))
 		{
@@ -764,19 +739,10 @@ public class ExamManager
 			if (!player.hasPermission("exams.nocooldown"))
 			{
 				Exams.sendMessage(playerName, ChatColor.RED + "You cannot take another exam so soon!");
-				Exams.sendMessage(playerName, ChatColor.RED + "Try again in " + ChatColor.YELLOW + StudentManager.getTimeUntilCanDoExam(Bukkit.getServer().getPlayer(playerName).getWorld(), playerName) + ChatColor.RED + " minutes");
+				Exams.sendMessage(playerName, ChatColor.RED + "Try again in " + ChatColor.YELLOW + StudentManager.getTimeUntilCanDoExam(playerName) + ChatColor.RED + " minutes");
 				return false;
 			}
 		}
-
-		
-		String[] oldRanks = PermissionsManager.getGroups(playerName);
-		
-		StudentManager.setOriginalRanks(playerName, oldRanks);
-		
-		PermissionsManager.removeGroups(playerName, oldRanks);
-
-		PermissionsManager.addGroup(playerName, "student");
 
 		StudentManager.signupForExam(playerName, examName);
 

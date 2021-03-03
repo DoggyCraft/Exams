@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Exams extends JavaPlugin
 {
@@ -60,7 +61,7 @@ public class Exams extends JavaPlugin
 
 	public static void sendMessage(String playerName, String message)
 	{
-		instance.getServer().getPlayer(playerName).sendMessage(ChatColor.AQUA + message);
+		Objects.requireNonNull(instance.getServer().getPlayer(playerName)).sendMessage(ChatColor.AQUA + message);
 	}
 
 	public void reloadSettings()
@@ -95,17 +96,6 @@ public class Exams extends JavaPlugin
 	{
 		instance = this;
 
-		if (getServer().getPluginManager().getPlugin("Vault") != null)
-		{
-			log("Vault found, Exam prices are enabled!");
-		}
-		else
-		{
-			log("Vault not found, Exam prices are disabled!");
-			// onDisable();
-			examPricesEnabled = false;
-		}
-
 		examManager = new ExamManager();
 		studentManager = new StudentManager();
 		permissionManager = new PermissionsManager();
@@ -118,7 +108,7 @@ public class Exams extends JavaPlugin
 		examManager.load();
 		studentManager.load();
 
-		getServer().getPluginManager().registerEvents(new BlockListener(this), this);
+		getServer().getPluginManager().registerEvents(new BlockListener(), this);
 
 		/*
 		try

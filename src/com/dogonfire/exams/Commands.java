@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-//import java.util.Comparator;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -60,7 +59,7 @@ public class Commands
 		{
 			if (args.length == 0)
 			{
-				commandHelp(sender);
+				commandPluginInfo(sender);
 				return true;
 			}
 			if (args.length == 1)
@@ -78,12 +77,12 @@ public class Commands
 				}
 				if (args[0].equalsIgnoreCase("help"))
 				{
-					if ((!player.isOp()) && (!player.hasPermission("exams.list")))
+					if ((!player.isOp()) && (!player.hasPermission("exams.help")))
 					{
 						return false;
 					}
 
-					commandList(sender);
+					commandHelp(sender);
 
 					return true;
 				}
@@ -110,6 +109,7 @@ public class Commands
 							return false;
 						}
 
+						commandList(sender);
 						return true;
 					}
 
@@ -121,7 +121,6 @@ public class Commands
 			{
 				if (args.length == 2)
 				{
-					
 					if (args[0].equalsIgnoreCase("info"))
 					{
 						if (!player.isOp() && !player.hasPermission("exams.info"))
@@ -181,16 +180,32 @@ public class Commands
 	{
 		return true;
 	}
+
+	private boolean commandList(CommandSender sender)
+	{
+
+		sender.sendMessage(ChatColor.AQUA + "Exams in " + Exams.instance().serverName + ":");
+
+		// Checks for exam
+		List<String> exams = ExamManager.getExams();
+		StringBuilder examsString = new StringBuilder();
+		int i = 0;
+		for (String examName : exams) {
+			i += 1;
+			if (i == 1) {
+				examsString.append((String) (ChatColor.DARK_AQUA+examName));
+			}
+			else {
+				examsString.append((String) (ChatColor.AQUA+", "+ChatColor.DARK_AQUA+examName));
+			}
+		}
+		sender.sendMessage(examsString.toString());
+
+		return true;
+	}
 	
 	private boolean commandReset(CommandSender sender, String playerName)
 	{
-		String[] originalRanks = StudentManager.getOriginalRanks(playerName);
-		
-		if(originalRanks!=null)
-		{
-			PermissionsManager.addGroups(playerName, originalRanks);	
-		}
-
 		StudentManager.removeStudent(playerName);
 		StudentManager.resetExamTime(playerName);
 		
@@ -206,17 +221,10 @@ public class Commands
 		// Checks for exam
 		String currentExam = StudentManager.getExamForStudent(playerName);
 		if(currentExam!=null)
-		{			
+		{
 			sender.sendMessage(ChatColor.AQUA + "In exam?" + ChatColor.WHITE + " - Yes");
 			sender.sendMessage(ChatColor.AQUA + "Exam name:" + ChatColor.WHITE + " - " + currentExam);
-			String[] originalRanks = StudentManager.getOriginalRanks(playerName);
-			if(originalRanks!=null)
-			{
-				sender.sendMessage(ChatColor.AQUA + "Original ranks:");
-				for (String rank : originalRanks) {
-					sender.sendMessage(ChatColor.WHITE + "    - " + rank);
-				}
-			}
+
 			String examTime = StudentManager.getLastExamTime(playerName);
 			if(examTime!=null)
 			{
@@ -258,7 +266,7 @@ public class Commands
 				}
 			}
 		}
-		
+
 		
 		return true;
 	}
@@ -335,7 +343,7 @@ public class Commands
 		}
 	}
 
-	private boolean commandHelp(CommandSender sender)
+	private boolean commandPluginInfo(CommandSender sender)
 	{
 		sender.sendMessage(ChatColor.YELLOW + "------------------ " + Exams.instance().getDescription().getFullName() + " ------------------");
 		sender.sendMessage(ChatColor.AQUA + "By DogOnFire");
@@ -347,7 +355,7 @@ public class Commands
 		return true;
 	}
 
-	private boolean commandList(CommandSender sender)
+	private boolean commandHelp(CommandSender sender)
 	{
 		sender.sendMessage(ChatColor.YELLOW + "------------------ " + Exams.instance().getDescription().getFullName() + " ------------------");
 		sender.sendMessage(ChatColor.AQUA + "/exams" + ChatColor.WHITE + " - Basic info");

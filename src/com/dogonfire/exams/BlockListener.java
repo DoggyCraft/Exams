@@ -13,11 +13,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class BlockListener implements Listener
 {
-	private Exams	plugin;
+	static private BlockListener	instance;
 
-	BlockListener(Exams p)
+	public BlockListener()
 	{
-		this.plugin = p;
+		instance = this;
 	}
 
     private void destroySign(Block signBlock)
@@ -61,22 +61,22 @@ public class BlockListener implements Listener
 	{
 		Player player = event.getPlayer();
 
-		if (!plugin.getExamManager().isExamSign(event.getBlock(), event.getLines()))
+		if (!ExamManager.isExamSign(event.getBlock(), event.getLines()))
 		{
 			return;
 		}
 
-		if (!player.isOp() && !plugin.getPermissionsManager().hasPermission(player, "exams.place"))
+		if (!player.isOp() && !PermissionsManager.hasPermission(player, "exams.place"))
 		{
 			event.setCancelled(true);
             destroySign(event.getBlock());
 
-			plugin.sendInfo(player, ChatColor.RED + "You cannot place Exam signs");
+			Exams.sendInfo(player, ChatColor.RED + "You cannot place Exam signs");
 
 			return;
 		}
 
-		if (!plugin.getExamManager().handleNewExamSign(event))
+		if (!ExamManager.handleNewExamSign(event))
 		{
 			event.setCancelled(true);
             destroySign(event.getBlock());
@@ -88,7 +88,7 @@ public class BlockListener implements Listener
 	{
 		Player player = event.getPlayer();
 
-		if (!plugin.getExamManager().isExamSign(event.getClickedBlock()))
+		if (!ExamManager.isExamSign(event.getClickedBlock()))
 		{
 			return;
 		}
@@ -98,64 +98,64 @@ public class BlockListener implements Listener
 			return;
 		}
 
-		String examName = plugin.getExamManager().getExamFromSign(event.getClickedBlock());
+		String examName = ExamManager.getExamFromSign(event.getClickedBlock());
 
 		if (examName == null)
 		{
 			return;
 		}
 		
-		if (!plugin.getExamManager().examExists(examName))
+		if (!ExamManager.examExists(examName))
 		{
 			event.getPlayer().sendMessage(ChatColor.RED + "There is no exam called '" + examName + "'!");
 			return;
 		}
 		
-		String currentExam = plugin.getStudentManager().getExamForStudent(player.getName());
+		String currentExam = StudentManager.getExamForStudent(player.getName());
 
 		if(currentExam==null)
 		{
-			plugin.getExamManager().handleNewExamPrerequisites(player, examName);
+			ExamManager.handleNewExamPrerequisites(player, examName);
 			
 			return;
 		}
 
 		if (!currentExam.equals(examName))
 		{
-			plugin.sendInfo(event.getPlayer(), ChatColor.RED + "You are already signed up for the " + ChatColor.YELLOW + currentExam + ChatColor.RED + " exam!");
+			Exams.sendInfo(event.getPlayer(), ChatColor.RED + "You are already signed up for the " + ChatColor.YELLOW + currentExam + ChatColor.RED + " exam!");
 			return;
 		}
 		
-		if (plugin.getExamManager().isExamOpen(player.getWorld(), examName))
+		if (ExamManager.isExamOpen(player.getWorld(), examName))
 		{
-			if (!plugin.getStudentManager().isDoingExam(player.getName()))
+			if (!StudentManager.isDoingExam(player.getName()))
 			{
-				if (!plugin.getExamManager().generateExam(player.getName(), examName))
+				if (!ExamManager.generateExam(player.getName(), examName))
 				{
 					player.sendMessage(ChatColor.RED + "ERROR: Could not generate a " + ChatColor.YELLOW + examName + ChatColor.RED + "exam!");
 					return;
 				}
 
-				plugin.sendToAll(ChatColor.AQUA + player.getName() + " started on the exam for " + ChatColor.YELLOW + examName + ChatColor.AQUA + "!");
-				plugin.sendMessage(player.getName(), "You started on the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam.");
-				plugin.sendMessage(player.getName(), "Click on the sign again to repeat the exam question.");
-				plugin.sendMessage(player.getName(), "Good luck!");
+				Exams.sendToAll(ChatColor.AQUA + player.getName() + " started on the exam for " + ChatColor.YELLOW + examName + ChatColor.AQUA + "!");
+				Exams.sendMessage(player.getName(), "You started on the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam.");
+				Exams.sendMessage(player.getName(), "Click on the sign again to repeat the exam question.");
+				Exams.sendMessage(player.getName(), "Good luck!");
 
-				plugin.getExamManager().nextExamQuestion(player.getName());
+				ExamManager.nextExamQuestion(player.getName());
 			}
 
-			plugin.getExamManager().doExamQuestion(player.getName());
+			ExamManager.doExamQuestion(player.getName());
 		}
-		else if (!plugin.getStudentManager().isDoingExam(player.getName()))
+		else if (!StudentManager.isDoingExam(player.getName()))
 		{
-			plugin.sendInfo(event.getPlayer(), ChatColor.RED + "The exam has not started yet!");
-			plugin.sendInfo(event.getPlayer(), ChatColor.RED + "Please come back at " + ChatColor.YELLOW + plugin.getExamManager().getExamStartTime(examName) + ChatColor.RED + " Minecraft time");
+			Exams.sendInfo(event.getPlayer(), ChatColor.RED + "The exam has not started yet!");
+			Exams.sendInfo(event.getPlayer(), ChatColor.RED + "Please come back at " + ChatColor.YELLOW + ExamManager.getExamStartTime(examName) + ChatColor.RED + " Minecraft time");
 		}
 		else
 		{
-			plugin.sendInfo(event.getPlayer(), ChatColor.RED + "The exam has ended!");
-			plugin.getExamManager().calculateExamResult(event.getPlayer().getName());
-			plugin.getStudentManager().removeStudent(player.getName());
+			Exams.sendInfo(event.getPlayer(), ChatColor.RED + "The exam has ended!");
+			ExamManager.calculateExamResult(event.getPlayer().getName());
+			StudentManager.removeStudent(player.getName());
 		}
 	}
 }

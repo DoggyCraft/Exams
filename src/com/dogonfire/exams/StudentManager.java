@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -66,7 +65,7 @@ public class StudentManager
 	{
 		studentsConfig.set(playerName + ".LastExamTime", null);
 		
-		save();
+		instance.save();
 	}
 
 	public static boolean hasRecentExamAttempt(String playerName)
@@ -117,7 +116,7 @@ public class StudentManager
 		return diffMinutes > Exams.instance().autoCleanTime;
 	}
 
-	public static int getTimeUntilCanDoExam(World world, String studentName)
+	public static int getTimeUntilCanDoExam(String studentName)
 	{
 		String lastExamString = studentsConfig.getString(studentName + ".LastExamTime");
 
@@ -154,31 +153,12 @@ public class StudentManager
 
 			studentsConfig.set(playerName + ".ExamCorrectAnswers", correctAnswers);
 
-			save();
+			instance.save();
 		}
 
-		this.setLastExamTime(playerName);
+		setLastExamTime(playerName);
 	}
-	
-	public static void setOriginalRanks(String playerName, String[] oldRanks)
-	{
-		List<String> ranks = Arrays.asList(oldRanks);
-		studentsConfig.set(playerName + ".OriginalRanks", ranks);
-		instance.save();
-	}
-	
-	public static List<String> getOriginalRanksList(String playerName)
-	{
-		return studentsConfig.getStringList(playerName + ".OriginalRanks");
-	}
-	
-	public static String[] getOriginalRanks(String playerName)
-	{
-		List<String> originalRanksList = getOriginalRanksList(playerName);
-		String[] originalRanks = originalRanksList.toArray(new String[0]);
-		return originalRanks;
-	}
-	
+
 	public static String getLastExamTime(String playerName)
 	{
 		return studentsConfig.getString(playerName + ".LastExamTime");
@@ -299,7 +279,6 @@ public class StudentManager
 		studentsConfig.set(studentName + ".ExamQuestionOptions", null);
 		studentsConfig.set(studentName + ".ExamCorrectOption", null);
 		studentsConfig.set(studentName + ".ExamCorrectAnswers", null);
-		studentsConfig.set(studentName + ".OriginalRanks", null);
 
 		Exams.logDebug(studentName + " was removed as student");
 
