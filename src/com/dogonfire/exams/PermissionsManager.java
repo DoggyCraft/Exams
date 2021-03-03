@@ -1,5 +1,6 @@
 package com.dogonfire.exams;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -8,95 +9,92 @@ import net.milkbowl.vault.permission.Permission;
 
 public class PermissionsManager
 {
-	private String				pluginName			= "null";
-	private Exams				plugin;
-	private Permission 			vaultPermission;
+	static private Permission			vaultPermission;
+	static private PermissionsManager	instance;
 	
-	public PermissionsManager(Exams p)
+	public PermissionsManager()
 	{
-		this.plugin = p;
-			
-		if (p.examPricesEnabled) {
-			RegisteredServiceProvider<Permission> permissionProvider = plugin.getServer().getServicesManager().getRegistration(Permission.class);
-			vaultPermission = permissionProvider.getProvider();
+		instance = this;
+		if (Exams.instance().examRanksEnabled) {
+			RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
+
+			if (permissionProvider != null)
+			{
+				vaultPermission = ((Permission) permissionProvider.getProvider());
+				Exams.instance().examRanksEnabled = true;
+				Exams.log("Permission provider, exam ranks enabled.");
+			}
+			else
+			{
+				Exams.log("Permission provider not found, exam ranks disabled.");
+				Exams.instance().examRanksEnabled = false;
+			}
 		}
 	}
 
-	public void load()
+	public static boolean hasPermission(Player player, String node)
 	{
-		// Nothing to see here
-	}
-
-	public Plugin getPlugin()
-	{
-		return plugin;
-	}
-
-	public String getPermissionPluginName()
-	{
-		return pluginName;
-	}
-
-	public boolean hasPermission(Player player, String node)
-	{
-		if (this.plugin.examPricesEnabled) {
+		if (Exams.instance().examRanksEnabled) {
 			return vaultPermission.has(player, node);
 		}
-		return false;
+		else {
+			return player.hasPermission(node);
+		}
 	}
 
 	public String getGroup(String playerName)
 	{
-		if (this.plugin.examPricesEnabled) {
-			return vaultPermission.getPrimaryGroup(null, plugin.getServer().getPlayer(playerName));
+		if (Exams.instance().examPricesEnabled) {
+			return vaultPermission.getPrimaryGroup(null, Bukkit.getServer().getPlayer(playerName));
 		}
 		return "";
 	}
 	
-	public String[] getGroups(String playerName)
+	public static String[] getGroups(String playerName)
 	{
-		if (this.plugin.examPricesEnabled) {
-			return vaultPermission.getPlayerGroups(null, plugin.getServer().getPlayer(playerName));
+		if (Exams.instance().examPricesEnabled) {
+			return vaultPermission.getPlayerGroups(null, Bukkit.getServer().getPlayer(playerName));
 		}
 		return null;
 	}
 
-	public void addGroup(String playerName, String groupName)
+	public static void addGroup(String playerName, String groupName)
 	{
-		if (this.plugin.examPricesEnabled) {
-			Player player = plugin.getServer().getPlayer(playerName);
+		if (Exams.instance().examPricesEnabled) {
+			Player player = Bukkit.getServer().getPlayer(playerName);
 			vaultPermission.playerAddGroup(null, player, groupName);
 		}
 	}
 	
-	public void addGroups(String playerName, String[] groupNames)
+	public static void addGroups(String playerName, String[] groupNames)
 	{
 		for (String groupName : groupNames) {
 			addGroup(playerName, groupName);
 		}
 	}
 	
-	public void removeGroup(String playerName, String groupName)
+	public static void removeGroup(String playerName, String groupName)
 	{
-		if (this.plugin.examPricesEnabled) {
-			Player player = plugin.getServer().getPlayer(playerName);
+		if (Exams.instance().examPricesEnabled) {
+			Player player = Bukkit.getServer().getPlayer(playerName);
 			vaultPermission.playerRemoveGroup(null, player, groupName);
 		}
 	}
 	
-	public void removeGroups(String playerName, String[] groupNames)
+	public static void removeGroups(String playerName, String[] groupNames)
 	{
-		if (this.plugin.examPricesEnabled) {
+		if (Exams.instance().examPricesEnabled) {
 			for (String groupName : groupNames) {
 				removeGroup(playerName, groupName);
 			}
 		}
 	}
 	
-	public boolean inGroup(String playerName, String groupName)
+	public static boolean inGroup(String playerName, String groupName)
 	{
-		if (this.plugin.examPricesEnabled) {
-			Player player = plugin.getServer().getPlayer(playerName);
+		if (Exams.instance().examPricesEnabled) {
+			Player player = Bukkit.getServer().getPlayer(playerName);
+			assert player != null;
 			return vaultPermission.playerInGroup(player, groupName);
 		}
 		return false;

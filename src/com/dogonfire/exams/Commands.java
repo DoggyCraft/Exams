@@ -14,11 +14,11 @@ import org.bukkit.util.StringUtil;
 
 public class Commands
 {
-	private Exams	plugin	= null;
+	static private Commands		instance;
 
-	Commands(Exams p)
+	public Commands()
 	{
-		this.plugin = p;
+		instance = this;
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
@@ -38,7 +38,7 @@ public class Commands
 				{
 					if(args[0].equalsIgnoreCase("reload"))
 					{
-						plugin.reloadSettings();
+						Exams.instance().reloadSettings();
 
 						return true;
 					}
@@ -72,8 +72,8 @@ public class Commands
 						return false;
 					}
 
-					this.plugin.reloadSettings();
-					sender.sendMessage(ChatColor.YELLOW + this.plugin.getDescription().getFullName() + ":" + ChatColor.AQUA + " Reloaded configuration.");
+					Exams.instance().reloadSettings();
+					sender.sendMessage(ChatColor.YELLOW + Exams.instance().getDescription().getFullName() + ":" + ChatColor.AQUA + " Reloaded configuration.");
 					return true;
 				}
 				if (args[0].equalsIgnoreCase("help"))
@@ -184,17 +184,17 @@ public class Commands
 	
 	private boolean commandReset(CommandSender sender, String playerName)
 	{
-		String[] originalRanks = plugin.getStudentManager().getOriginalRanks(playerName);
+		String[] originalRanks = StudentManager.getOriginalRanks(playerName);
 		
 		if(originalRanks!=null)
 		{
-			plugin.getPermissionsManager().addGroups(playerName, originalRanks);	
+			PermissionsManager.addGroups(playerName, originalRanks);	
 		}
 
-		plugin.getStudentManager().removeStudent(playerName);
-		plugin.getStudentManager().resetExamTime(playerName);
+		StudentManager.removeStudent(playerName);
+		StudentManager.resetExamTime(playerName);
 		
-		sender.sendMessage(ChatColor.YELLOW + this.plugin.getDescription().getFullName() + ":" + ChatColor.AQUA + " Reset of player " + ChatColor.YELLOW + playerName + ChatColor.AQUA + "'s studentdata was successful!");
+		sender.sendMessage(ChatColor.YELLOW + Exams.instance().getDescription().getFullName() + ":" + ChatColor.AQUA + " Reset of player " + ChatColor.YELLOW + playerName + ChatColor.AQUA + "'s studentdata was successful!");
 		
 		return true;
 	}
@@ -204,12 +204,12 @@ public class Commands
 		sender.sendMessage(ChatColor.YELLOW + "Student data for: " + playerName);
 		
 		// Checks for exam
-		String currentExam = plugin.getStudentManager().getExamForStudent(playerName);
+		String currentExam = StudentManager.getExamForStudent(playerName);
 		if(currentExam!=null)
 		{			
 			sender.sendMessage(ChatColor.AQUA + "In exam?" + ChatColor.WHITE + " - Yes");
 			sender.sendMessage(ChatColor.AQUA + "Exam name:" + ChatColor.WHITE + " - " + currentExam);
-			String[] originalRanks = plugin.getStudentManager().getOriginalRanks(playerName);
+			String[] originalRanks = StudentManager.getOriginalRanks(playerName);
 			if(originalRanks!=null)
 			{
 				sender.sendMessage(ChatColor.AQUA + "Original ranks:");
@@ -217,12 +217,12 @@ public class Commands
 					sender.sendMessage(ChatColor.WHITE + "    - " + rank);
 				}
 			}
-			String examTime = plugin.getStudentManager().getLastExamTime(playerName);
+			String examTime = StudentManager.getLastExamTime(playerName);
 			if(examTime!=null)
 			{
 				sender.sendMessage(ChatColor.AQUA + "Last exam time:" + ChatColor.WHITE + " - " + examTime);
 			}
-			List<String> passedExams = plugin.getStudentManager().getPassedExams(playerName);
+			List<String> passedExams = StudentManager.getPassedExams(playerName);
 			String passedExamsByComma = String.join(", ", passedExams);
 			if(passedExams!=null)
 			{
@@ -231,12 +231,12 @@ public class Commands
 		}
 		else
 		{
-			String examTime = plugin.getStudentManager().getLastExamTime(playerName);
+			String examTime = StudentManager.getLastExamTime(playerName);
 			if(examTime!=null)
 			{
 				sender.sendMessage(ChatColor.AQUA + "In exam?" + ChatColor.WHITE + " - No");
 				sender.sendMessage(ChatColor.AQUA + "Last exam time:" + ChatColor.WHITE + " - " + examTime);
-				List<String> passedExams = plugin.getStudentManager().getPassedExams(playerName);
+				List<String> passedExams = StudentManager.getPassedExams(playerName);
 				String passedExamsByComma = String.join(", ", passedExams);
 				if(passedExams!=null)
 				{
@@ -245,7 +245,7 @@ public class Commands
 			}
 			else
 			{
-				List<String> passedExams = plugin.getStudentManager().getPassedExams(playerName);
+				List<String> passedExams = StudentManager.getPassedExams(playerName);
 				String passedExamsByComma = String.join(", ", passedExams);
 				if(passedExams!=null)
 				{
@@ -269,46 +269,46 @@ public class Commands
 
 		String examName = exam;
 		
-		if (!plugin.getExamManager().examExists(examName))
+		if (!ExamManager.examExists(examName))
 		{
 			player.sendMessage(ChatColor.RED + "There is no exam called '" + examName + "'!");
 			return false;
 		}
 		
-		String currentExam = plugin.getStudentManager().getExamForStudent(player.getName());
+		String currentExam = StudentManager.getExamForStudent(player.getName());
 
 		if(currentExam==null)
 		{
-			plugin.getExamManager().handleNewExamPrerequisites(player, examName);
+			ExamManager.handleNewExamPrerequisites(player, examName);
 			
 			return false;
 		}
 
 		if (!currentExam.equals(examName))
 		{
-			plugin.sendInfo(player, ChatColor.RED + "You are already signed up for the " + ChatColor.YELLOW + currentExam + ChatColor.RED + " exam!");
+			Exams.sendInfo(player, ChatColor.RED + "You are already signed up for the " + ChatColor.YELLOW + currentExam + ChatColor.RED + " exam!");
 			return false;
 		}
 		
-		if (plugin.getExamManager().isExamOpen(player.getWorld(), examName))
+		if (ExamManager.isExamOpen(player.getWorld(), examName))
 		{
-			if (!plugin.getStudentManager().isDoingExam(player.getName()))
+			if (!StudentManager.isDoingExam(player.getName()))
 			{
-				if (!plugin.getExamManager().generateExam(player.getName(), examName))
+				if (!ExamManager.generateExam(player.getName(), examName))
 				{
 					player.sendMessage(ChatColor.RED + "ERROR: Could not generate a " + ChatColor.YELLOW + examName + ChatColor.RED + "exam!");
 					return false;
 				}
 
-				plugin.sendToAll(ChatColor.AQUA + player.getName() + " started on the exam for " + ChatColor.YELLOW + examName + ChatColor.AQUA + "!");
-				plugin.sendMessage(player.getName(), "You started on the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam.");
-				plugin.sendMessage(player.getName(), "Click on the sign again to repeat the exam question.");
-				plugin.sendMessage(player.getName(), "Good luck!");
+				Exams.sendToAll(ChatColor.AQUA + player.getName() + " started on the exam for " + ChatColor.YELLOW + examName + ChatColor.AQUA + "!");
+				Exams.sendMessage(player.getName(), "You started on the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam.");
+				Exams.sendMessage(player.getName(), "Click on the sign again to repeat the exam question.");
+				Exams.sendMessage(player.getName(), "Good luck!");
 
-				plugin.getExamManager().nextExamQuestion(player.getName());
+				ExamManager.nextExamQuestion(player.getName());
 			}
 
-			plugin.getExamManager().doExamQuestion(player.getName());
+			ExamManager.doExamQuestion(player.getName());
 		}
 			
 		return true;
@@ -316,31 +316,31 @@ public class Commands
 
 	private void commandAnswer(Player player, String answer)
 	{
-		if (!plugin.getStudentManager().isDoingExam(player.getName()) || plugin.getStudentManager().getExamForStudent(player.getName()) == null)
+		if (!StudentManager.isDoingExam(player.getName()) || StudentManager.getExamForStudent(player.getName()) == null)
 		{
 			player.sendMessage(ChatColor.RED + "You are not taking any exam!");
 			return;
 		}
 
-		plugin.getStudentManager().answer(player.getName(), answer);
+		StudentManager.answer(player.getName(), answer);
 
-		if (plugin.getExamManager().nextExamQuestion(player.getName()))
+		if (ExamManager.nextExamQuestion(player.getName()))
 		{
-			plugin.getExamManager().doExamQuestion(player.getName());
+			ExamManager.doExamQuestion(player.getName());
 		}
 		else
 		{
-			plugin.getExamManager().calculateExamResult(player.getName());
-			plugin.getStudentManager().removeStudent(player.getName());
+			ExamManager.calculateExamResult(player.getName());
+			StudentManager.removeStudent(player.getName());
 		}
 	}
 
 	private boolean commandHelp(CommandSender sender)
 	{
-		sender.sendMessage(ChatColor.YELLOW + "------------------ " + plugin.getDescription().getFullName() + " ------------------");
+		sender.sendMessage(ChatColor.YELLOW + "------------------ " + Exams.instance().getDescription().getFullName() + " ------------------");
 		sender.sendMessage(ChatColor.AQUA + "By DogOnFire");
 		sender.sendMessage(ChatColor.AQUA + "");
-		sender.sendMessage(ChatColor.AQUA + "There are currently " + ChatColor.WHITE + plugin.getExamManager().getExams().size() + ChatColor.AQUA + " exams in " + this.plugin.serverName);
+		sender.sendMessage(ChatColor.AQUA + "There are currently " + ChatColor.WHITE + ExamManager.getExams().size() + ChatColor.AQUA + " exams in " + Exams.instance().serverName);
 		sender.sendMessage(ChatColor.AQUA + "");
 		sender.sendMessage(ChatColor.AQUA + "Use " + ChatColor.WHITE + "/exams help" + ChatColor.AQUA + " for a list of commands");
 
@@ -349,7 +349,7 @@ public class Commands
 
 	private boolean commandList(CommandSender sender)
 	{
-		sender.sendMessage(ChatColor.YELLOW + "------------------ " + this.plugin.getDescription().getFullName() + " ------------------");
+		sender.sendMessage(ChatColor.YELLOW + "------------------ " + Exams.instance().getDescription().getFullName() + " ------------------");
 		sender.sendMessage(ChatColor.AQUA + "/exams" + ChatColor.WHITE + " - Basic info");
 		//sender.sendMessage(ChatColor.AQUA + "/exams list" + ChatColor.WHITE + " - List of all exams");
 		sender.sendMessage(ChatColor.AQUA + "/exams a" + ChatColor.WHITE + " - Answer A to an exam question");
@@ -384,14 +384,14 @@ public class Commands
 	{
 		int students = 0;
 
-		students = plugin.getExamManager().cleanStudentData();
+		students = ExamManager.cleanStudentData();
 
 		if(sender!=null)
 		{
-			sender.sendMessage(ChatColor.YELLOW + this.plugin.getDescription().getFullName() + ":" + ChatColor.AQUA + " Cleaned up data for " + ChatColor.YELLOW + students + ChatColor.AQUA + " students");
+			sender.sendMessage(ChatColor.YELLOW + Exams.instance().getDescription().getFullName() + ":" + ChatColor.AQUA + " Cleaned up data for " + ChatColor.YELLOW + students + ChatColor.AQUA + " students");
 		}
-		
-		plugin.log("Cleaned up data for " + students + " students");
+
+		Exams.log("Cleaned up data for " + students + " students");
 
 		return true;
 	}
@@ -420,36 +420,36 @@ public class Commands
 			{
 				List<String> arg1 = new ArrayList<String>();
 				arg1.add("help");
-				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.reload"))
+				if (player == null || player.isOp() || PermissionsManager.hasPermission(player, "exams.reload"))
 				{
 					arg1.add("reload");
 				}
-				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.clean"))
+				if (player == null || player.isOp() || PermissionsManager.hasPermission(player, "exams.clean"))
 				{
 					arg1.add("clean");
 				}
-				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.list"))
+				if (player == null || player.isOp() || PermissionsManager.hasPermission(player, "exams.list"))
 				{
 					arg1.add("list");
 				}
-				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.reset"))
+				if (player == null || player.isOp() || PermissionsManager.hasPermission(player, "exams.reset"))
 				{
 					arg1.add("reset");
 				}
-				if (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.studentinfo"))
+				if (player == null || player.isOp() || PermissionsManager.hasPermission(player, "exams.studentinfo"))
 				{
 					arg1.add("studentinfo");
 				}
 				if (player != null)
 				{
-					if (plugin.getStudentManager().isDoingExam(player.getName()) && plugin.getStudentManager().getExamForStudent(player.getName()) != null)
+					if (StudentManager.isDoingExam(player.getName()) && StudentManager.getExamForStudent(player.getName()) != null)
 					{
 						arg1.add("a");
 						arg1.add("b");
 						arg1.add("c");
 						arg1.add("d");
 					}
-					if (player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.test"))
+					if (player.isOp() || PermissionsManager.hasPermission(player, "exams.test"))
 					{
 						arg1.add("test");
 					}
@@ -459,11 +459,11 @@ public class Commands
 			}
 			else if (args.length == 2)
 			{
-				if (args[0].equalsIgnoreCase("reset") && (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.reset")))
+				if (args[0].equalsIgnoreCase("reset") && (player == null || player.isOp() || PermissionsManager.hasPermission(player, "exams.reset")))
 				{
 					return null;
 				}
-				else if (args[0].equalsIgnoreCase("studentinfo") && (player == null || player.isOp() || Exams.getPermissionsManager().hasPermission(player, "exams.studentinfo")))
+				else if (args[0].equalsIgnoreCase("studentinfo") && (player == null || player.isOp() || PermissionsManager.hasPermission(player, "exams.studentinfo")))
 				{
 					return null;
 				}

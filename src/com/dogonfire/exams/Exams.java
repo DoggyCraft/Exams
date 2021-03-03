@@ -13,13 +13,14 @@ public class Exams extends JavaPlugin
 {
 	private ExamManager			examManager			= null;
 	private StudentManager		studentManager		= null;
-	private static PermissionsManager	permissionManager	= null;
+	private PermissionsManager	permissionManager	= null;
 
 	private FileConfiguration	config				= null;
 	private Commands			commands			= null;
 
 	public boolean				debug				= false;
 	public boolean				examPricesEnabled	= true;
+	public boolean				examRanksEnabled	= true;
 
 	public String				serverName			= "Your Server";
 	public String				languageFilename	= "english.yml";
@@ -28,47 +29,38 @@ public class Exams extends JavaPlugin
 	public int 					autoCleanTime		= 8*60;
 	public int					requiredExamScore	= 80;
 
-	public ExamManager getExamManager()
-	{
-		return this.examManager;
+	static private Exams 		instance;
+
+	static public Exams instance() {
+		return instance;
 	}
 
-	public StudentManager getStudentManager()
+	public static void log(String message)
 	{
-		return this.studentManager;
+		instance.getLogger().info(message);
 	}
 
-	public static PermissionsManager getPermissionsManager()
+	public static void logDebug(String message)
 	{
-		return permissionManager;
-	}
-
-	public void log(String message)
-	{
-		this.getLogger().info(message);
-	}
-
-	public void logDebug(String message)
-	{
-		if (this.debug)
+		if (instance.debug)
 		{
-			this.getLogger().info(message);
+			instance.getLogger().info(message);
 		}
 	}
 
-	public void sendInfo(Player player, String message)
+	public static void sendInfo(Player player, String message)
 	{
 		player.sendMessage(ChatColor.AQUA + message);
 	}
 
-	public void sendToAll(String message)
+	public static void sendToAll(String message)
 	{
-		getServer().broadcastMessage(message);
+		instance.getServer().broadcastMessage(message);
 	}
 
-	public void sendMessage(String playerName, String message)
+	public static void sendMessage(String playerName, String message)
 	{
-		getServer().getPlayer(playerName).sendMessage(ChatColor.AQUA + message);
+		instance.getServer().getPlayer(playerName).sendMessage(ChatColor.AQUA + message);
 	}
 
 	public void reloadSettings()
@@ -101,29 +93,30 @@ public class Exams extends JavaPlugin
 
 	public void onEnable()
 	{
+		instance = this;
+
 		if (getServer().getPluginManager().getPlugin("Vault") != null)
 		{
-			log("Vault found!");
+			log("Vault found, Exam prices are enabled!");
 		}
 		else
 		{
-			log("Vault not found, Exams is disabled.");
-			onDisable();
+			log("Vault not found, Exam prices are disabled!");
+			// onDisable();
 			examPricesEnabled = false;
 		}
 
-		this.examManager = new ExamManager(this);
-		this.studentManager = new StudentManager(this);
-		this.permissionManager = new PermissionsManager(this);
+		examManager = new ExamManager();
+		studentManager = new StudentManager();
+		permissionManager = new PermissionsManager();
 
-		this.commands = new Commands(this);
+		this.commands = new Commands();
 
 		loadSettings();
 		saveSettings();
 
-		this.examManager.load();
-		this.permissionManager.load();
-		this.studentManager.load();
+		examManager.load();
+		studentManager.load();
 
 		getServer().getPluginManager().registerEvents(new BlockListener(this), this);
 

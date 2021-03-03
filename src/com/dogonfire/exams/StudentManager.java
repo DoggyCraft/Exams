@@ -13,65 +13,65 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class StudentManager
 {
-	private Exams				plugin				= null;
-	private FileConfiguration	studentsConfig		= null;
-	private File				studentsConfigFile	= null;
+	static private FileConfiguration	studentsConfig		= null;
+	static private File					studentsConfigFile	= null;
+	static private StudentManager	 	instance;
 
-	StudentManager(Exams p)
+	public StudentManager()
 	{
-		this.plugin = p;
+		instance = this;
 	}
 
 	public void load()
 	{
-		if (this.studentsConfigFile == null)
+		if (studentsConfigFile == null)
 		{
-			this.studentsConfigFile = new File(plugin.getDataFolder(), "students.yml");
+			studentsConfigFile = new File(Exams.instance().getDataFolder(), "students.yml");
 		}
 
-		this.studentsConfig = YamlConfiguration.loadConfiguration(studentsConfigFile);
+		studentsConfig = YamlConfiguration.loadConfiguration(studentsConfigFile);
 
-		this.plugin.log("Loaded " + studentsConfig.getKeys(false).size() + " students.");
+		Exams.log("Loaded " + studentsConfig.getKeys(false).size() + " students.");
 	}
 
 	public void save()
 	{
-		if ((this.studentsConfig == null) || (studentsConfigFile == null))
+		if ((studentsConfig == null) || (studentsConfigFile == null))
 		{
 			return;
 		}
 
 		try
 		{
-			this.studentsConfig.save(studentsConfigFile);
+			studentsConfig.save(studentsConfigFile);
 		}
 		catch (Exception ex)
 		{
-			this.plugin.log("Could not save config to " + studentsConfigFile + ": " + ex.getMessage());
+			Exams.log("Could not save config to " + studentsConfigFile + ": " + ex.getMessage());
 		}
 	}
 
-	public void setLastExamTime(String playerName)
+	public static void setLastExamTime(String playerName)
 	{
 		String pattern = "HH:mm dd-MM-yyyy";
 		DateFormat formatter = new SimpleDateFormat(pattern);
 		Date thisDate = new Date();
 
-		this.studentsConfig.set(playerName + ".LastExamTime", formatter.format(thisDate));
+		studentsConfig.set(playerName + ".LastExamTime", formatter.format(thisDate));
 
-		save();
+		instance.save();
 	}
 	
-	public void resetExamTime(String playerName)
+	public static void resetExamTime(String playerName)
 	{
-		this.studentsConfig.set(playerName + ".LastExamTime", null);
+		studentsConfig.set(playerName + ".LastExamTime", null);
 		
 		save();
 	}
 
-	public boolean hasRecentExamAttempt(String playerName)
+	public static boolean hasRecentExamAttempt(String playerName)
 	{
-		String lastExamString = this.studentsConfig.getString(playerName + ".LastExamTime");
+		String lastExamString = studentsConfig.getString(playerName + ".LastExamTime");
 
 		String pattern = "HH:mm dd-MM-yyyy";
 		DateFormat formatter = new SimpleDateFormat(pattern);
@@ -90,12 +90,12 @@ public class StudentManager
 		long diff = thisDate.getTime() - lastExamDate.getTime();
 		long diffMinutes = diff / 60000L;
 
-		return diffMinutes < plugin.minExamTime;
+		return diffMinutes < Exams.instance().minExamTime;
 	}
 
-	public boolean hasOutdatedExamAttempt(String playerName)
+	public static boolean hasOutdatedExamAttempt(String playerName)
 	{
-		String lastExamString = this.studentsConfig.getString(playerName + ".LastExamTime");
+		String lastExamString = studentsConfig.getString(playerName + ".LastExamTime");
 
 		String pattern = "HH:mm dd-MM-yyyy";
 		DateFormat formatter = new SimpleDateFormat(pattern);
@@ -114,10 +114,10 @@ public class StudentManager
 		long diff = thisDate.getTime() - lastExamDate.getTime();
 		long diffMinutes = diff / 60000L;
 
-		return diffMinutes > plugin.autoCleanTime;
+		return diffMinutes > Exams.instance().autoCleanTime;
 	}
 
-	public int getTimeUntilCanDoExam(World world, String studentName)
+	public static int getTimeUntilCanDoExam(World world, String studentName)
 	{
 		String lastExamString = studentsConfig.getString(studentName + ".LastExamTime");
 
@@ -139,10 +139,10 @@ public class StudentManager
 		long diff = thisDate.getTime() - lastExamDate.getTime();
 		long diffMinutes = diff / 60000L;
 
-		return (int) (plugin.minExamTime - diffMinutes);
+		return (int) (Exams.instance().minExamTime - diffMinutes);
 	}
 
-	public void answer(String playerName, String answer)
+	public static void answer(String playerName, String answer)
 	{
 		String correctAnswer = studentsConfig.getString(playerName + ".ExamCorrectOption");
 
@@ -157,34 +157,34 @@ public class StudentManager
 			save();
 		}
 
-		plugin.getStudentManager().setLastExamTime(playerName);
+		this.setLastExamTime(playerName);
 	}
 	
-	public void setOriginalRanks(String playerName, String[] oldRanks)
+	public static void setOriginalRanks(String playerName, String[] oldRanks)
 	{
 		List<String> ranks = Arrays.asList(oldRanks);
 		studentsConfig.set(playerName + ".OriginalRanks", ranks);
-		save();
+		instance.save();
 	}
 	
-	public List<String> getOriginalRanksList(String playerName)
+	public static List<String> getOriginalRanksList(String playerName)
 	{
 		return studentsConfig.getStringList(playerName + ".OriginalRanks");
 	}
 	
-	public String[] getOriginalRanks(String playerName)
+	public static String[] getOriginalRanks(String playerName)
 	{
 		List<String> originalRanksList = getOriginalRanksList(playerName);
 		String[] originalRanks = originalRanksList.toArray(new String[0]);
 		return originalRanks;
 	}
 	
-	public String getLastExamTime(String playerName)
+	public static String getLastExamTime(String playerName)
 	{
 		return studentsConfig.getString(playerName + ".LastExamTime");
 	}
 	
-	public void setPassedExam(String playerName, String exam)
+	public static void setPassedExam(String playerName, String exam)
 	{
 		List<String> passedExams = getPassedExams(playerName);
 		
@@ -192,31 +192,31 @@ public class StudentManager
 		
 		studentsConfig.set(playerName + ".PassedExams", passedExams);		
 		
-		save();
+		instance.save();
 	}
 
-	public List<String> getPassedExams(String playerName)
+	public static List<String> getPassedExams(String playerName)
 	{
 		return studentsConfig.getStringList(playerName + ".PassedExams");		
 	}
 
-	public boolean signupForExam(String playerName, String examName)
+	public static boolean signupForExam(String playerName, String examName)
 	{
 		studentsConfig.set(playerName + ".Exam", examName);
 		studentsConfig.set(playerName + ".ExamCorrectAnswers", 0);
 		studentsConfig.set(playerName + ".ExamProgressIndex", -1);
 
-		save();
+		instance.save();
 
 		return true;
 	}
 
-	public boolean isDoingExam(String playerName)
+	public static boolean isDoingExam(String playerName)
 	{
 		return studentsConfig.getInt(playerName + ".ExamProgressIndex") > -1;
 	}
 
-	public int nextExamQuestionIndex(String playerName)
+	public static int nextExamQuestionIndex(String playerName)
 	{
 		int questionIndex = studentsConfig.getInt(playerName + ".ExamProgressIndex");
 
@@ -224,17 +224,17 @@ public class StudentManager
 
 		studentsConfig.set(playerName + ".ExamProgressIndex", questionIndex);
 
-		save();
+		instance.save();
 
 		return questionIndex;
 	}
 
-	public int getExamProgressIndexForStudent(String playerName)
+	public static int getExamProgressIndexForStudent(String playerName)
 	{
 		return studentsConfig.getInt(playerName + ".ExamProgressIndex");
 	}
 
-	public int getExamQuestionIndexForStudent(String playerName)
+	public static int getExamQuestionIndexForStudent(String playerName)
 	{
 		List<String> questions = studentsConfig.getStringList(playerName + ".ExamQuestionIndices");
 		int examProgressIndex = Integer.parseInt(studentsConfig.getString(playerName + ".ExamProgressIndex"));
@@ -242,55 +242,55 @@ public class StudentManager
 		return Integer.parseInt(questions.get(examProgressIndex));
 	}
 
-	public void setExamQuestionForStudent(String playerName, String question, List<String> options, String correctOption)
+	public static void setExamQuestionForStudent(String playerName, String question, List<String> options, String correctOption)
 	{
 		studentsConfig.set(playerName + ".ExamQuestion", question);
 		studentsConfig.set(playerName + ".ExamQuestionOptions", options);
 		studentsConfig.set(playerName + ".ExamCorrectOption", correctOption);
 
-		save();
+		instance.save();
 	}
 
-	public String getExamQuestionForStudent(String playerName)
+	public static String getExamQuestionForStudent(String playerName)
 	{
 		return studentsConfig.getString(playerName + ".ExamQuestion");
 	}
 
-	public List<String> getExamQuestionOptionsForStudent(String playerName)
+	public static List<String> getExamQuestionOptionsForStudent(String playerName)
 	{
 		return studentsConfig.getStringList(playerName + ".ExamQuestionOptions");
 	}
 
-	public void setExamForStudent(String playerName, String examName, List<String> questions)
+	public static void setExamForStudent(String playerName, String examName, List<String> questions)
 	{
 		studentsConfig.set(playerName + ".Exam", examName);
 		studentsConfig.set(playerName + ".ExamProgressIndex", -1);
 		studentsConfig.set(playerName + ".ExamCorrectAnswers", 0);
 		studentsConfig.set(playerName + ".ExamQuestionIndices", questions);
 
-		plugin.logDebug("Setting question indices of size " + questions.size());
+		Exams.logDebug("Setting question indices of size " + questions.size());
 
-		save();
+		instance.save();
 	}
 
-	public int getCorrectAnswersForStudent(String playerName)
+	public static int getCorrectAnswersForStudent(String playerName)
 	{
 		return studentsConfig.getInt(playerName + ".ExamCorrectAnswers");
 	}
 
-	public String getExamForStudent(String playerName)
+	public static String getExamForStudent(String playerName)
 	{
 		return studentsConfig.getString(playerName + ".Exam");
 	}
 
-	public Set<String> getStudents()
+	public static Set<String> getStudents()
 	{
 		Set<String> allStudents = studentsConfig.getKeys(false);
 
 		return allStudents;
 	}
 
-	public void removeStudent(String studentName)
+	public static void removeStudent(String studentName)
 	{
 		studentsConfig.set(studentName + ".Exam", null);
 		studentsConfig.set(studentName + ".ExamProgressIndex", null);
@@ -301,15 +301,15 @@ public class StudentManager
 		studentsConfig.set(studentName + ".ExamCorrectAnswers", null);
 		studentsConfig.set(studentName + ".OriginalRanks", null);
 
-		plugin.logDebug(studentName + " was removed as student");
+		Exams.logDebug(studentName + " was removed as student");
 
-		save();
+		instance.save();
 	}
 
-	public void deleteStudent(String studentName)
+	public static void deleteStudent(String studentName)
 	{
 		studentsConfig.set(studentName, null);
 
-		save();
+		instance.save();
 	}
 }
