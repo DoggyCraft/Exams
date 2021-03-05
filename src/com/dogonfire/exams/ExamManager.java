@@ -523,9 +523,9 @@ public class ExamManager
 	{
 		String examName = StudentManager.getExamForStudent(playerName);
 
-		Exams.logDebug("getExamNumberOfQuestions is " + getExamNumberOfQuestions(examName));
+//		Exams.logDebug("getExamNumberOfQuestions is " + getExamNumberOfQuestions(examName));
 		int nextQuestionIndex = StudentManager.nextExamQuestionIndex(playerName);
-		Exams.logDebug("StudentManager.nextExamQuestion(playerName) is " + nextQuestionIndex);
+//		Exams.logDebug("StudentManager.nextExamQuestion(playerName) is " + nextQuestionIndex);
 		
 		if (nextQuestionIndex >= getExamNumberOfQuestions(examName))
 		{
@@ -596,11 +596,11 @@ public class ExamManager
 
 		Map<?,?> question = questions.get(examQuestionIndex);
 
-		Exams.logDebug(question.toString());
+//		Exams.logDebug(question.toString());
 
 		String correctOption = (String) question.get("CorrectOption");
 
-		Exams.logDebug(correctOption);
+//		Exams.logDebug(correctOption);
 
 		return correctOption;
 
@@ -615,7 +615,7 @@ public class ExamManager
 //		Exams.logDebug(examsConfig.getStringList(examName + ".Questions").toString());
 
 		List<Map<?,?>> questions = examsConfig.getMapList(examName + ".Questions");
-		Exams.logDebug(questions.toString());
+//		Exams.logDebug(questions.toString());
 
 		if(examQuestionIndex >= questions.size())
 		{
@@ -625,11 +625,11 @@ public class ExamManager
 		
 		Map<?,?> question = questions.get(examQuestionIndex);
 
-		Exams.logDebug(question.toString());
+//		Exams.logDebug(question.toString());
 
 		List<String> options = (List<String>) question.get("Options");
 
-		Exams.logDebug(options.toString());
+//		Exams.logDebug(options.toString());
 
 		return options;
 	}
@@ -642,7 +642,7 @@ public class ExamManager
 
 		List<Map<?,?>> questions = examsConfig.getMapList(examName + ".Questions");
 
-		Exams.logDebug(questions.toString());
+//		Exams.logDebug(questions.toString());
 
 		if (questions.size() == 0)
 		{
