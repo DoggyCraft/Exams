@@ -179,9 +179,26 @@ public class ExamManager
 			Exams.log("Loaded " + exams.size() + " exams.");
 
 			// Compatibility checks
+			boolean oldRanks = false;
+			boolean oldQuestions = false;
 			for (String examName : exams) {
-				if (examsConfig.getString(examName + ".RankName") != null) {
-					Exams.log(Level.WARNING, "It seems like you have exams, where there is still the 'RankName' property. Please move said rank name into command(s), using the group commands from your Permission Provider, as Exams doesn't support giving out ranks anymore.");
+				if (!oldRanks) {
+					// If using rank names for giving ranks, instead of commands
+					if (examsConfig.getString(examName + ".RankName") != null) {
+						Exams.log(Level.WARNING, "It seems like you have exams, where there is still the 'RankName' property. Please move said rank name into command(s), using the group commands from your Permission Provider, as Exams doesn't support giving out ranks anymore.");
+						oldRanks = true;
+					}
+				}
+
+				if (!oldQuestions) {
+					// If using the old questions system on the exam
+					if (examsConfig.getConfigurationSection(examName + ".Questions") != null) {
+						Exams.log(Level.WARNING, "It seems like you have exams using the old questions format - please backup your exams.yml file and delete it in order to generate a file with the new format, and change your exams to follow the new standard. The exams will NOT work.");
+						oldQuestions = true;
+					}
+				}
+
+				if (oldRanks && oldQuestions) {
 					break;
 				}
 			}
