@@ -9,6 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
 
 public class Exams extends JavaPlugin
 {
@@ -40,6 +41,8 @@ public class Exams extends JavaPlugin
 	{
 		instance.getLogger().info(message);
 	}
+
+	public static void log(Level level, String message) { instance.getLogger().log(level, message); }
 
 	public static void logDebug(String message)
 	{

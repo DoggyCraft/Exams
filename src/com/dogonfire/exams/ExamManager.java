@@ -6,10 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -68,6 +66,7 @@ public class ExamManager
 		// Fill out exams.yml with 2 example exams...
 		if(!examsConfigFile.exists())
 		{
+			// Citizen test exam
 			String testExam = "Citizen";
 
 			List<String> questions = new ArrayList<String>();
@@ -82,22 +81,31 @@ public class ExamManager
 			examsConfig.set(testExam + ".Command", "/lp user $PlayerName group add Citizen");
 			examsConfig.set(testExam + ".StartTime", 600);
 			examsConfig.set(testExam + ".EndTime", 13000);
-			examsConfig.set(testExam + ".Price", 100);
 			examsConfig.set(testExam + ".NumberOfQuestions", 3);
-			examsConfig.set(testExam + ".Questions", questions);
+
+
+			List<Map<?,?>> questionList = new ArrayList<Map<?,?>>();
 			
 			for (String question : questions)
 			{
+				Map<String,Object> questionMap = new LinkedHashMap<String, Object>();
+				questionMap.put("Question", question);
+				
 				List<String> options = new ArrayList<String>();
 				options.add("Yes");
 				options.add("No");
 				options.add("Maybe");
 				options.add("I dont know");
 
-				examsConfig.set(testExam + ".Questions." + question + ".Options", options);
-				examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "B");
+				questionMap.put("Options", options);
+				questionMap.put("CorrectOption", "B");
+
+				questionList.add(questionMap);
 			}
-					
+
+			examsConfig.set(testExam + ".Questions", questionList);
+
+			// Wizard test exam
 			testExam = "Wizard";
 
 			questions = new ArrayList<String>();
@@ -111,26 +119,35 @@ public class ExamManager
 			examsConfig.set(testExam + ".RequiredRank", "Citizen");
 			List<String> commands = new ArrayList<String>();
 			commands.add("/give $PlayerName minecraft:poppy 1");
-			commands.add("/lp user $PlayerName group add Wizard");
 			commands.add("/lp user $PlayerName group remove Citizen");
+			commands.add("/lp user $PlayerName group add Wizard");
 			examsConfig.set(testExam + ".Commands", commands);
-			examsConfig.set(testExam + ".StartTime", 600);
-			examsConfig.set(testExam + ".EndTime", 13000);
+			examsConfig.set(testExam + ".StartTime", 500);
+			examsConfig.set(testExam + ".EndTime", 12500);
 			examsConfig.set(testExam + ".Price", 100);
-			examsConfig.set(testExam + ".NumberOfQuestions", 3);
-			examsConfig.set(testExam + ".Questions", questions);
+			examsConfig.set(testExam + ".NumberOfQuestions", 4);
+
+
+			questionList = new ArrayList<Map<?,?>>();
 
 			for (String question : questions)
 			{
+				Map<String,Object> questionMap = new LinkedHashMap<String, Object>();
+				questionMap.put("Question", question);
+
 				List<String> options = new ArrayList<String>();
 				options.add("Cobweb and spidereyes");
 				options.add("Light and darkness");
 				options.add("No idea");
 				options.add("Blue monday");
 
-				examsConfig.set(testExam + ".Questions." + question + ".Options", options);
-				examsConfig.set(testExam + ".Questions." + question + ".CorrectOption", "A");
+				questionMap.put("Options", options);
+				questionMap.put("CorrectOption", "A");
+
+				questionList.add(questionMap);
 			}
+
+			examsConfig.set(testExam + ".Questions", questionList);
 			
 			save();
 			
@@ -164,7 +181,7 @@ public class ExamManager
 			// Compatibility checks
 			for (String examName : exams) {
 				if (examsConfig.getString(examName + ".RankName") != null) {
-					Exams.log("[INFO] It seems like you have exams, where there is still the 'RankName' property. Please move said rank name into command(s), using the group commands from your Permission Provider, as Exams doesn't support giving out ranks anymore.");
+					Exams.log(Level.WARNING, "It seems like you have exams, where there is still the 'RankName' property. Please move said rank name into command(s), using the group commands from your Permission Provider, as Exams doesn't support giving out ranks anymore.");
 					break;
 				}
 			}
@@ -489,10 +506,11 @@ public class ExamManager
 	{
 		String examName = StudentManager.getExamForStudent(playerName);
 
-		//plugin.log("getExamNumberOfQuestions is " + getExamNumberOfQuestions(examName));
-		//plugin.log("StudentManager.nextExamQuestion(playerName) is " + StudentManager.nextExamQuestionIndex(playerName));
+		Exams.logDebug("getExamNumberOfQuestions is " + getExamNumberOfQuestions(examName));
+		int nextQuestionIndex = StudentManager.nextExamQuestionIndex(playerName);
+		Exams.logDebug("StudentManager.nextExamQuestion(playerName) is " + nextQuestionIndex);
 		
-		if (StudentManager.nextExamQuestionIndex(playerName) >= getExamNumberOfQuestions(examName))
+		if (nextQuestionIndex >= getExamNumberOfQuestions(examName))
 		{
 			Exams.log("getExamNumberOfQuestions: No more questions");
 			return false;
@@ -513,7 +531,7 @@ public class ExamManager
 
 		if (options==null || options.size() == 0)
 		{
-			Exams.log("nextExamQuestion: No options found for question '" + question + "'");
+			Exams.log("nextExamQuestion: No options found for question '" + question + "' (" + examQuestionIndex + ")");
 			return false;
 		}
 
@@ -527,9 +545,11 @@ public class ExamManager
 
 	public static String getExamQuestionText(String examName, int examQuestionIndex)
 	{
-		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
-		assert configSection != null;
-		Set<String> questions = configSection.getKeys(false);
+//		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
+//		assert configSection != null;
+//		Set<String> questions = configSection.getKeys(false);
+
+		List<Map<?,?>> questions = examsConfig.getMapList(examName + ".Questions");
 
 		if(examQuestionIndex >= questions.size())
 		{
@@ -537,14 +557,17 @@ public class ExamManager
 			return null;
 		}
 		
-		return (String) questions.toArray()[examQuestionIndex];
+//		return (String) questions.toArray()[examQuestionIndex];
+		return (String) questions.get(examQuestionIndex).get("Question");
 	}
 
 	public static String getExamQuestionCorrectOptionText(String examName, int examQuestionIndex)
 	{
-		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
-		assert configSection != null;
-		Set<String> questions = configSection.getKeys(false);
+//		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
+//		assert configSection != null;
+//		Set<String> questions = configSection.getKeys(false);
+
+		List<Map<?,?>> questions = examsConfig.getMapList(examName + ".Questions");
 
 		if(examQuestionIndex >= questions.size())
 		{
@@ -552,16 +575,30 @@ public class ExamManager
 			return null;
 		}
 
-		String question = (String) questions.toArray()[examQuestionIndex];
+//		String question = (String) questions.toArray()[examQuestionIndex];
 
-		return examsConfig.getString(examName + ".Questions." + question + ".CorrectOption");
+		Map<?,?> question = questions.get(examQuestionIndex);
+
+		Exams.logDebug(question.toString());
+
+		String correctOption = (String) question.get("CorrectOption");
+
+		Exams.logDebug(correctOption);
+
+		return correctOption;
+
+//		return examsConfig.getString(examName + ".Questions." + question + ".CorrectOption");
 	}
 
 	public static List<String> getExamQuestionOptionText(String examName, int examQuestionIndex)
 	{
-		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
-		assert configSection != null;
-		Set<String> questions = configSection.getKeys(false);
+//		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
+//		assert configSection != null;
+//
+//		Exams.logDebug(examsConfig.getStringList(examName + ".Questions").toString());
+
+		List<Map<?,?>> questions = examsConfig.getMapList(examName + ".Questions");
+		Exams.logDebug(questions.toString());
 
 		if(examQuestionIndex >= questions.size())
 		{
@@ -569,41 +606,51 @@ public class ExamManager
 			return null;
 		}
 		
-		String question = (String) questions.toArray()[examQuestionIndex];
+		Map<?,?> question = questions.get(examQuestionIndex);
 
-		return examsConfig.getStringList(examName + ".Questions." + question + ".Options");
+		Exams.logDebug(question.toString());
+
+		List<String> options = (List<String>) question.get("Options");
+
+		Exams.logDebug(options.toString());
+
+		return options;
 	}
 
 	public static boolean generateExam(String playerName, String examName)
 	{
-		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
-		assert configSection != null;
-		Set<String> questionKeys = configSection.getKeys(false);
+//		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
+//		assert configSection != null;
+//		Set<String> questionKeys = configSection.getKeys(false);
 
-		if (questionKeys.size() == 0)
+		List<Map<?,?>> questions = examsConfig.getMapList(examName + ".Questions");
+
+		Exams.logDebug(questions.toString());
+
+		if (questions.size() == 0)
 		{
 			Exams.log("No questions for exam called '" + examName + "'");
 			return false;
 		}
 
-		if (questionKeys.size() < getExamNumberOfQuestions(examName))
+		if (questions.size() < getExamNumberOfQuestions(examName))
 		{
 			Exams.log("Not enough questions for exam '" + examName + "'");
 			return false;
 		}
 
-		Exams.logDebug("Got " + questionKeys.size() + " questions");
+		Exams.logDebug("Got " + questions.size() + " questions");
 
 		List<String> selectedQuestions = new ArrayList<String>();
 
 		for (int q = 0; q < getExamNumberOfQuestions(examName); q++)
 		{
-			selectedQuestions.add(String.valueOf(random.nextInt(questionKeys.size())));
+			selectedQuestions.add(String.valueOf(random.nextInt(questions.size())));
 		}
 
 		while (!isDifferentStrings(selectedQuestions))
 		{
-			selectedQuestions.set(random.nextInt(selectedQuestions.size()), String.valueOf(random.nextInt(questionKeys.size())));
+			selectedQuestions.set(random.nextInt(selectedQuestions.size()), String.valueOf(random.nextInt(questions.size())));
 		}
 
 		StudentManager.setExamForStudent(playerName, examName, selectedQuestions);
@@ -656,7 +703,11 @@ public class ExamManager
 			n++;
 		}
 
-		Exams.sendMessage(playerName, ChatColor.AQUA + "Type " + ChatColor.WHITE + "/exams a, /exams b, /exams c or /exams d" + ChatColor.AQUA + " to answer.");
+		Exams.sendMessage(playerName, ChatColor.AQUA + "Type " +
+				ChatColor.WHITE + "/exams a" + ChatColor.AQUA + ", " +
+				ChatColor.WHITE + "/exams b" + ChatColor.AQUA + ", " +
+				ChatColor.WHITE + "/exams c" + ChatColor.AQUA + " or " +
+				ChatColor.WHITE + "/exams d" + ChatColor.AQUA + " to answer.");
 	}
 
 	public static boolean handleNewExamSign(SignChangeEvent event)
