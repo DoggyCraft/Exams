@@ -132,7 +132,7 @@ public class BlockListener implements Listener
 			{
 				if (!ExamManager.generateExam(player.getName(), examName))
 				{
-					player.sendMessage(ChatColor.RED + "ERROR: Could not generate a " + ChatColor.YELLOW + examName + ChatColor.RED + "exam!");
+					player.sendMessage(ChatColor.RED + "ERROR: Could not generate a " + ChatColor.YELLOW + examName + ChatColor.RED + " exam!");
 					return;
 				}
 

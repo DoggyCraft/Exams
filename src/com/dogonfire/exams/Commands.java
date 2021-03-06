@@ -183,7 +183,6 @@ public class Commands
 
 	private boolean commandList(CommandSender sender)
 	{
-
 		sender.sendMessage(ChatColor.AQUA + "Exams in " + Exams.instance().serverName + ":");
 
 		// Checks for exam
