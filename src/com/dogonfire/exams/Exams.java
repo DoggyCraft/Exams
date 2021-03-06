@@ -12,23 +12,24 @@ import java.util.Objects;
 
 public class Exams extends JavaPlugin
 {
-	private ExamManager			examManager			= null;
-	private StudentManager		studentManager		= null;
-	private PermissionsManager	permissionManager	= null;
+	private ExamManager			examManager				= null;
+	private StudentManager		studentManager			= null;
+	private PermissionsManager	permissionManager		= null;
 
-	private FileConfiguration	config				= null;
-	private Commands			commands			= null;
+	private FileConfiguration	config					= null;
+	private Commands			commands				= null;
 
-	public boolean				debug				= false;
-	public boolean				examPricesEnabled	= true;
-	public boolean				examRanksEnabled	= true;
+	public boolean				debug					= false;
+	public boolean				examPricesEnabled		= true;
+	public boolean				examRanksEnabled		= true;
 
-	public String				serverName			= "Your Server";
-	public String				languageFilename	= "english.yml";
+	public String				serverName				= "Your Server";
+	public String				languageFilename		= "english.yml";
 
-	public int					minExamTime			= 60;
-	public int 					autoCleanTime		= 8*60;
-	public int					requiredExamScore	= 80;
+	public int					minExamTime				= 60;
+	public int 					autoCleanTime			= 8*60;
+	public int					requiredExamScore		= 80;
+	public boolean				shuffleQuestionOptions	= false;
 
 	static private Exams 		instance;
 
@@ -80,6 +81,7 @@ public class Exams extends JavaPlugin
 		minExamTime = config.getInt("MinExamTime", 60);
 		requiredExamScore = config.getInt("RequiredExamScore", 80);
 		debug = config.getBoolean("Debug", false);
+		shuffleQuestionOptions = config.getBoolean("ShuffleQuestionOptions", false);
 	}
 
 	public void saveSettings()
@@ -88,6 +90,7 @@ public class Exams extends JavaPlugin
 		config.set("MinExamTime", minExamTime);
 		config.set("RequiredExamScore", requiredExamScore);
 		config.set("Debug", debug);
+		config.set("ShuffleQuestionOptions", shuffleQuestionOptions);
 
 		saveConfig();
 	}

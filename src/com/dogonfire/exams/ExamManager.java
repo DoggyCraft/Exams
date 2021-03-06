@@ -6,10 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -257,18 +254,23 @@ public class ExamManager
 			return false;	 		
 		}
 
+		// If the exam is an old exam
+		if (ExamManager.isOldExam(examName))
+		{
+			player.sendMessage(ChatColor.RED + "ERROR: This exam is using the old Exams system! Please ask an Administrator to update this exam, if you believe this to be an error.");
+			Exams.log("Old questions system for the exam '" + examName + "'. Please update to the new questions system (backup exams.yml, and delete to see the newest format).");
+			return false;
+		}
+
 		// Sign the player up for the EXAM
 		if (ExamManager.signupForExam(player.getName(), examName, player))
 		{
 			Exams.sendMessage(player.getName(), ChatColor.AQUA + "Click the sign again to start this exam!");
 			Exams.sendToAll(ChatColor.AQUA + player.getName() + " signed up for the " + ChatColor.YELLOW + examName + ChatColor.AQUA + " exam!");
-		}
-		else
-		{
-			return false;
+			return true;
 		}
 
-		return true;		
+		return false;
 	}
 	
 	public static boolean isWallSign(Block sign) {
@@ -516,6 +518,83 @@ public class ExamManager
 			Exams.log("nextExamQuestion: No options found for question '" + question + "'");
 			return false;
 		}
+		else if (correctOption==null) {
+			Exams.log("nextExamQuestion: No correct option found for question '" + question + "'");
+			return false;
+		}
+
+		// Shuffle question options
+		if (Exams.instance().shuffleQuestionOptions)
+		{
+			int correctOptionNumber;
+			switch (correctOption) {
+				case "A":
+					correctOptionNumber = 0;
+					break;
+				case "B":
+					correctOptionNumber = 1;
+					break;
+				case "C":
+					correctOptionNumber = 2;
+					break;
+				case "D":
+					correctOptionNumber = 3;
+					break;
+				default:
+					Exams.logDebug("Lol something went wrong here, defaulting correct option to A.");
+					correctOptionNumber = 0;
+					break;
+			}
+
+			List<Map<String, Object>> shuffleOptions = new ArrayList<Map<String, Object>>();
+			for (int i = 0; i < options.size(); i++)
+			{
+				Map<String, Object> option = new HashMap<String, Object>();
+				option.put("OptionText", options.get(i));
+
+				if (i == correctOptionNumber) {
+					option.put("CorrectOption", true);
+				}
+				else
+				{
+					option.put("CorrectOption", false);
+				}
+				shuffleOptions.add(option);
+			}
+
+			// Shuffle the list
+			Collections.shuffle(shuffleOptions, new Random());
+
+			// Bring back to original
+			for (int i = 0; i < shuffleOptions.size(); i++)
+			{
+				Map<String, ?> option = shuffleOptions.get(i);
+				options.add(i, (String) option.get("OptionText"));
+
+				// If it is the correct option
+				if ((Boolean) option.get("CorrectOption"))
+				{
+					switch (i) {
+						case 0:
+							correctOption = "A";
+							break;
+						case 1:
+							correctOption = "B";
+							break;
+						case 2:
+							correctOption = "C";
+							break;
+						case 3:
+							correctOption = "D";
+							break;
+						default:
+							Exams.logDebug("Lol something went wrong here, defaulting correct option to A.");
+							correctOption = "A";
+							break;
+					}
+				}
+			}
+		}
 
 		Exams.log("nextExamQuestion: Question is '" + question + "'");
 		Exams.log("nextExamQuestion: ExamQuestionIndex is " + examQuestionIndex);
@@ -572,6 +651,12 @@ public class ExamManager
 		String question = (String) questions.toArray()[examQuestionIndex];
 
 		return examsConfig.getStringList(examName + ".Questions." + question + ".Options");
+	}
+
+	public static boolean isOldExam(String examName)
+	{
+		ConfigurationSection configSection = examsConfig.getConfigurationSection(examName + ".Questions");
+		return configSection != null;
 	}
 
 	public static boolean generateExam(String playerName, String examName)
